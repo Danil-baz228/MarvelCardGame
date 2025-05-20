@@ -1,7 +1,6 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
@@ -16,29 +15,45 @@ app.use(session({
   saveUninitialized: true
 }));
 
-// Защита маршрутов (не пускаем незалогиненных)
+
 function ensureAuth(req, res, next) {
-  const publicPaths = ['/', '/auth/login', '/auth/register', '/reminder'];
+  const publicPaths = [
+    '/',
+    '/auth/login',
+    '/auth/register',
+    '/reminder'
+  ];
+
   if (!req.session.user && !publicPaths.includes(req.path)) {
-    return res.redirect('/auth/login');
+    return res.redirect('/');
   }
+
   next();
 }
 
 app.use(ensureAuth);
 
-// Универсальный роутинг
+
+const mainController = require('./controllers/mainController');
+app.get('/', mainController.handle);
+
+
 app.all('*', (req, res) => {
-  const [_, controllerName = 'main'] = req.path.split('/');
+  const [, controllerName = 'main'] = req.path.split('/');
   try {
     const controller = require(`./controllers/${controllerName}Controller`);
-    controller.handle(req, res);
+    if (typeof controller.handle === 'function') {
+      controller.handle(req, res);
+    } else {
+      throw new Error('Missing handle()');
+    }
   } catch (err) {
-    res.status(404).sendFile(path.join(__dirname, 'views/404.html'));
+    console.error('Routing error:', err.message);
+    res.status(404).sendFile(path.resolve('views', '404.html'));
   }
 });
 
-// 💡 Вот эта строка запускает сервер:
+
 app.listen(PORT, () => {
   console.log(`App running on http://localhost:${PORT}`);
 });

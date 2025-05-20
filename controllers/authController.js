@@ -3,10 +3,10 @@ const { registerUser, loginUser } = require('../models/user');
 
 exports.handle = async (req, res) => {
   const action = req.path.includes('register')
-    ? 'register'
-    : req.path.includes('logout')
-      ? 'logout'
-      : 'login';
+      ? 'register'
+      : req.path.includes('logout')
+          ? 'logout'
+          : 'login';
 
   if (req.method === 'GET') {
     if (action === 'register') {
@@ -20,12 +20,13 @@ exports.handle = async (req, res) => {
 
   if (req.method === 'POST') {
     if (action === 'register') {
-      const result = await registerUser(req.body);
+      const { username, password, email } = req.body;
+      const result = await registerUser({ username, password, email });
       return res.send(`
         <html>
           <head>
             <link rel="stylesheet" href="/style.css">
-            <title>Registration Success</title>
+            <title>Registration</title>
           </head>
           <body>
             <div class="message-box">
@@ -35,16 +36,33 @@ exports.handle = async (req, res) => {
           </body>
         </html>
       `);
-
     }
 
     if (action === 'login') {
-      const user = await loginUser(req.body);
+      const { username, password } = req.body;
+      const user = await loginUser({ username, password });
+
       if (user) {
-        req.session.user = { id: user.id, status: user.status };
+        req.session.user = {
+          id: user.id,
+          username: user.username
+        };
         return res.redirect('/main');
       } else {
-        return res.send('Invalid login or password');
+        return res.send(`
+          <html>
+            <head>
+              <link rel="stylesheet" href="/style.css">
+              <title>Login Failed</title>
+            </head>
+            <body>
+              <div class="message-box">
+                <h2>Invalid username or password</h2>
+                <a href="/login" class="button-link">Try Again</a>
+              </div>
+            </body>
+          </html>
+        `);
       }
     }
   }

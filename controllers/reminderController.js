@@ -5,7 +5,7 @@ const { findUserByEmail } = require('../models/user');
 
 exports.handle = async (req, res) => {
   if (req.method === 'GET') {
-    return res.sendFile(path.join(__dirname, '../views/reminder.html'));
+    return res.sendFile(path.resolve('views', 'reminder.html'));
   }
 
   const { email } = req.body;
@@ -22,7 +22,7 @@ exports.handle = async (req, res) => {
       from: config.smtp.auth.user,
       to: email,
       subject: 'S.W.O.R.D. Password Reminder',
-      text: `Hello ${user.full_name},\n\nYour password is: ${user.password}\n\nStay safe,\nS.W.O.R.D.`
+      text: `Hello ${user.username},\n\nSorry, but we can't send the password directly for security reasons.\n\nPlease use the reset function (soon).\n\nSincerely,\nS.W.O.R.D.`
     });
 
     res.send(`
@@ -33,7 +33,7 @@ exports.handle = async (req, res) => {
         </head>
         <body>
           <div class="message-box">
-            <h2>Password has been sent to your email.</h2>
+            <h2>Info sent to your email.</h2>
             <a href="/login" class="button-link">Back to Login</a>
           </div>
         </body>

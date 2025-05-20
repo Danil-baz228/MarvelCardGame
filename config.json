@@ -1,9 +1,9 @@
 {
   "development": {
     "host": "localhost",
-    "user": "dbazylevych",
-    "password": "securepass",
-    "database": "ucode_web"
+    "user": "root",
+    "password": "0000",
+    "database": "great_battle"
   },
   "smtp": {
     "host": "smtp.ethereal.email",

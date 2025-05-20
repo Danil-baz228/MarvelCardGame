@@ -1,15 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <title>Main Page</title>
+  <title>Great Battle</title>
   <link rel="stylesheet" href="/style.css">
+  <!-- {{USER_INJECT}} -->
 </head>
 <body>
-  <h1>Welcome, Agent</h1>
-  <p>Status: <strong>Protected</strong></p>
-  <form action="/auth/logout" method="GET">
-    <button type="submit">Logout</button>
-  </form>
+<header class="site-header">
+  <div class="container">
+    <h1>🃏 Great Battle</h1>
+    <div id="auth-bar">
+      <!-- JS вставить тут: або логін, або Увійти / Зареєструватися -->
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+  <section class="welcome-box">
+    <h2>Ласкаво просимо до Marvel Card Game</h2>
+    <p>Битви героїв і лиходіїв починаються просто тут!</p>
+
+    <div id="action-section"></div>
+  </section>
+</main>
+
+<script>
+  const authBar = document.getElementById('auth-bar');
+  const actionSection = document.getElementById('action-section');
+
+  if (window.user) {
+    authBar.innerHTML = `
+        <span>Привіт, <strong>${window.user.username}</strong></span>
+        <a href="/auth/logout" class="button">Вийти</a>
+      `;
+    actionSection.innerHTML = `
+        <a href="/play" class="button">🎮 Грати</a>
+      `;
+  } else {
+    authBar.innerHTML = `
+        <a href="/auth/login" class="button">Увійти</a>
+        <a href="/auth/register" class="button">Зареєструватися</a>
+      `;
+    actionSection.innerHTML = `
+        <p><strong>Увійдіть до акаунту</strong>, щоб почати гру!</p>
+      `;
+  }
+</script>
 </body>
 </html>
