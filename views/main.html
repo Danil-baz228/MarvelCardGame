@@ -3,26 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <title>Great Battle</title>
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/main.css">
+  <!-- {{USER_INJECT}} -->
 </head>
 <body>
+
 <header class="site-header">
-  <div class="container">
-    <h1>🃏 Great Battle</h1>
-    <div id="auth-bar">
-      <!-- {{USER_INJECT}} -->
-    </div>
+  <div class="header-inner">
+    <h1 class="site-title">🃏 Great Battle</h1>
+    <div id="auth-bar" class="auth-bar"></div>
   </div>
 </header>
 
+
 <main class="main-content">
-  <section class="welcome-box">
+  <section class="welcome-box fade-in">
     <h2>Ласкаво просимо до Marvel Card Game</h2>
     <p>Битви героїв і лиходіїв починаються просто тут!</p>
-
     <div id="action-section"></div>
   </section>
+
+  <section class="rules-section fade-in">
+    <h3>📜 Як грати?</h3>
+    <ul>
+      <li>🔹 Увійдіть або зареєструйтесь</li>
+      <li>🔹 Натисніть "Грати", щоб розпочати бій</li>
+      <li>🔹 Кожен гравець отримує N карт</li>
+      <li>🔹 Гра йде по черзі: Атака, Захист або Пас</li>
+      <li>🔹 Перемагає той, хто першим знизить HP суперника до 0</li>
+    </ul>
+  </section>
+
+  <section class="cards-preview fade-in">
+    <h3>🃏 Приклади карт</h3>
+    <div class="card-list">
+      <div class="card">
+        <img src="https://i.imgur.com/zKQ4nDf.png" alt="Iron Man">
+        <p><strong>Iron Man</strong><br>🗡 6 ⚔ 4 💰 3</p>
+      </div>
+      <div class="card">
+        <img src="https://i.imgur.com/nkVMegz.png" alt="Thanos">
+        <p><strong>Thanos</strong><br>🗡 9 ⚔ 8 💰 5</p>
+      </div>
+      <div class="card">
+        <img src="https://i.imgur.com/B6DZWk2.png" alt="Spider-Man">
+        <p><strong>Spider-Man</strong><br>🗡 4 ⚔ 3 💰 2</p>
+      </div>
+    </div>
+  </section>
 </main>
+
+<footer class="site-footer">
+  <p>🔗 Звʼязок: <a href="https://t.me/Marshall949 ">@Marshall949, </a><a href="https://t.me/danilbaz">@danilbaz, </a><a href="https://t.me/MxmChb">@MxmChb</a> | GitHub: <a href="https://github.com/Danil-baz228/MarvelCardGame">MarvelCardGame</a></p>
+</footer>
 
 <script>
   const authBar = document.getElementById('auth-bar');
@@ -30,7 +63,7 @@
 
   if (window.user) {
     const avatar = window.user.avatar_url
-            ? `<img src="${window.user.avatar_url}" alt="avatar" style="width:32px; height:32px; border-radius:50%; margin-right:8px;">`
+            ? `<img src="${window.user.avatar_url}" class="avatar">`
             : '';
 
     authBar.innerHTML = `
@@ -39,20 +72,15 @@
       <a href="/profile" class="button">Профіль</a>
       <a href="/auth/logout" class="button">Вийти</a>
     `;
-
-    actionSection.innerHTML = `
-      <a href="/play" class="button">🎮 Грати</a>
-    `;
+    actionSection.innerHTML = `<a href="/play" class="button play-button">🎮 Грати</a>`;
   } else {
     authBar.innerHTML = `
       <a href="/auth/login" class="button">Увійти</a>
       <a href="/auth/register" class="button">Зареєструватися</a>
     `;
-
-    actionSection.innerHTML = `
-      <p><strong>Увійдіть до акаунту</strong>, щоб почати гру!</p>
-    `;
+    actionSection.innerHTML = `<p><strong>Увійдіть</strong>, щоб почати гру!</p>`;
   }
 </script>
+
 </body>
 </html>
