@@ -11,17 +11,22 @@ exports.handle = async (req, res) => {
   if (req.method === 'GET') {
     if (action === 'register') {
       return res.sendFile(path.join(__dirname, '../views/register.html'));
-    } else if (action === 'logout') {
-      req.session.destroy(() => res.redirect('/login'));
-    } else {
-      return res.sendFile(path.join(__dirname, '../views/login.html'));
     }
+
+    if (action === 'logout') {
+      req.session.destroy(() => res.redirect('/login'));
+      return;
+    }
+
+
+    return res.sendFile(path.join(__dirname, '../views/login.html'));
   }
 
   if (req.method === 'POST') {
     if (action === 'register') {
       const { username, password, email } = req.body;
       const result = await registerUser({ username, password, email });
+
       return res.send(`
         <html>
           <head>
@@ -48,7 +53,7 @@ exports.handle = async (req, res) => {
           username: user.username,
           avatar_url: user.avatar_url
         };
-        return res.redirect('/main');
+        return res.redirect('/');
       } else {
         return res.send(`
           <html>

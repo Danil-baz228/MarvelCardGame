@@ -19,6 +19,8 @@ app.use(session({
 function ensureAuth(req, res, next) {
   const publicPaths = [
     '/',
+    '/login',
+    '/register',
     '/auth/login',
     '/auth/register',
     '/reminder'
@@ -33,13 +35,18 @@ function ensureAuth(req, res, next) {
 
 app.use(ensureAuth);
 
+app.get('/login', (req, res) => res.redirect('/auth/login'));
+app.get('/register', (req, res) => res.redirect('/auth/register'));
 
+// 🏠 Главная
 const mainController = require('./controllers/mainController');
 app.get('/', mainController.handle);
 
+// 👤 Профиль
 const profileController = require('./controllers/profileController');
 app.all('/profile', profileController.handle);
 
+// 🌐 Универсальный контроллерный роутинг
 app.all('*', (req, res) => {
   const [, controllerName = 'main'] = req.path.split('/');
   try {
@@ -55,7 +62,7 @@ app.all('*', (req, res) => {
   }
 });
 
-
+// ▶ Запуск
 app.listen(PORT, () => {
   console.log(`App running on http://localhost:${PORT}`);
 });
