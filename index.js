@@ -37,6 +37,8 @@ app.use(ensureAuth);
 const mainController = require('./controllers/mainController');
 app.get('/', mainController.handle);
 
+const profileController = require('./controllers/profileController');
+app.all('/profile', profileController.handle);
 
 app.all('*', (req, res) => {
   const [, controllerName = 'main'] = req.path.split('/');

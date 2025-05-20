@@ -4,14 +4,13 @@
   <meta charset="UTF-8">
   <title>Great Battle</title>
   <link rel="stylesheet" href="/style.css">
-  <!-- {{USER_INJECT}} -->
 </head>
 <body>
 <header class="site-header">
   <div class="container">
     <h1>🃏 Great Battle</h1>
     <div id="auth-bar">
-      <!-- JS вставить тут: або логін, або Увійти / Зареєструватися -->
+
     </div>
   </div>
 </header>
@@ -30,21 +29,29 @@
   const actionSection = document.getElementById('action-section');
 
   if (window.user) {
+    const avatar = window.user.avatar_url
+            ? `<img src="${window.user.avatar_url}" alt="avatar" style="width:32px; height:32px; border-radius:50%; margin-right:8px;">`
+            : '';
+
     authBar.innerHTML = `
-        <span>Привіт, <strong>${window.user.username}</strong></span>
-        <a href="/auth/logout" class="button">Вийти</a>
-      `;
+      ${avatar}
+      <span>Привіт, <strong>${window.user.username}</strong></span>
+      <a href="/profile" class="button">Профіль</a>
+      <a href="/auth/logout" class="button">Вийти</a>
+    `;
+
     actionSection.innerHTML = `
-        <a href="/play" class="button">🎮 Грати</a>
-      `;
+      <a href="/play" class="button">🎮 Грати</a>
+    `;
   } else {
     authBar.innerHTML = `
-        <a href="/auth/login" class="button">Увійти</a>
-        <a href="/auth/register" class="button">Зареєструватися</a>
-      `;
+      <a href="/auth/login" class="button">Увійти</a>
+      <a href="/auth/register" class="button">Зареєструватися</a>
+    `;
+
     actionSection.innerHTML = `
-        <p><strong>Увійдіть до акаунту</strong>, щоб почати гру!</p>
-      `;
+      <p><strong>Увійдіть до акаунту</strong>, щоб почати гру!</p>
+    `;
   }
 </script>
 </body>

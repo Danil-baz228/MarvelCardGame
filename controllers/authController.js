@@ -45,7 +45,8 @@ exports.handle = async (req, res) => {
       if (user) {
         req.session.user = {
           id: user.id,
-          username: user.username
+          username: user.username,
+          avatar_url: user.avatar_url
         };
         return res.redirect('/main');
       } else {
