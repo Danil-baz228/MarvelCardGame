@@ -1,0 +1,16 @@
+{
+  "development": {
+    "host": "localhost",
+    "user": "dbazylevych",
+    "password": "securepass",
+    "database": "ucode_web"
+  },
+  "smtp": {
+    "host": "smtp.ethereal.email",
+    "port": 587,
+    "auth": {
+      "user": "uzfyks4pfjc6e3vb@ethereal.email",
+      "pass": "wshQaxzgnEFxYf33Ux"
+    }
+  }
+}

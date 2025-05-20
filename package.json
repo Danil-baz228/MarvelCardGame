@@ -1,0 +1,16 @@
+{
+    "name": "t03_bring_them_together",
+    "version": "1.0.0",
+    "description": "Final S.W.O.R.D. integration app",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "nodemailer": "^6.9.1",
+        "mysql2": "^3.9.3",
+        "ejs": "^3.1.9", 
+        "express-session": "^1.17.3"
+    }
+}
