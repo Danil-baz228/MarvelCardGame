@@ -46,6 +46,10 @@ app.get('/', mainController.handle);
 const profileController = require('./controllers/profileController');
 app.all('/profile', profileController.handle);
 
+// 🎮 Play Game
+const playController = require('./controllers/playController');
+app.all('/play', playController.handle)
+
 // 🌐 Универсальный контроллерный роутинг
 app.all('*', (req, res) => {
   const [, controllerName = 'main'] = req.path.split('/');

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Battle Game</title>
+    <link rel="stylesheet" href="/play.css">
+</head>
+<body>
+<div class="game-container">
+    <header class="game-header">
+        <h1>Card Battle</h1>
+        <div class="game-stats">
+            <div class="turn-indicator">Turn: <span id="turn-number">1</span></div>
+            <button id="reset-game" class="action-button">New Game</button>
+        </div>
+    </header>
+
+    <div class="battlefield">
+        <div class="player-area opponent-area">
+            <div class="player-stats">
+                <div class="player-name">Opponent</div>
+                <div class="stats">
+                    <div class="health-bar">
+                        <div class="label">Health:</div>
+                        <div class="bar">
+                            <div id="opponent-health-bar" class="bar-fill" style="width: 100%;"></div>
+                        </div>
+                        <div id="opponent-health-value">30</div>
+                    </div>
+                    <div class="defense-stat">
+                        <div class="label">Defense:</div>
+                        <div id="opponent-defense">0</div>
+                    </div>
+                </div>
+                <div class="card-count">
+                    <div class="label">Cards:</div>
+                    <div id="opponent-card-count">4</div>
+                </div>
+            </div>
+            <div class="hand opponent-hand">
+                <div class="card card-back"></div>
+                <div class="card card-back"></div>
+                <div class="card card-back"></div>
+                <div class="card card-back"></div>
+            </div>
+        </div>
+
+        <div class="game-log">
+            <h3>Battle Log</h3>
+            <div id="log-messages" class="log-content"></div>
+        </div>
+
+        <div class="player-area your-area">
+            <div class="hand your-hand" id="player-hand">
+                <!-- Cards will be added dynamically -->
+            </div>
+            <div class="player-stats">
+                <div class="player-name">You</div>
+                <div class="stats">
+                    <div class="health-bar">
+                        <div class="label">Health:</div>
+                        <div class="bar">
+                            <div id="player-health-bar" class="bar-fill" style="width: 100%;"></div>
+                        </div>
+                        <div id="player-health-value">30</div>
+                    </div>
+                    <div class="defense-stat">
+                        <div class="label">Defense:</div>
+                        <div id="player-defense">0</div>
+                    </div>
+                    <div class="coins-stat">
+                        <div class="label">Coins:</div>
+                        <div id="player-coins">3</div>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button id="end-turn" class="action-button">End Turn</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-over-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="game-result">Game Over</h2>
+            <p id="game-result-message"></p>
+            <button id="new-game" class="action-button">Play Again</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let gameState = null;
+        const playerHand = document.getElementById('player-hand');
+        const logMessages = document.getElementById('log-messages');
+        const turnNumber = document.getElementById('turn-number');
+        const playerHealthBar = document.getElementById('player-health-bar');
+        const playerHealthValue = document.getElementById('player-health-value');
+        const playerDefense = document.getElementById('player-defense');
+        const playerCoins = document.getElementById('player-coins');
+        const opponentHealthBar = document.getElementById('opponent-health-bar');
+        const opponentHealthValue = document.getElementById('opponent-health-value');
+        const opponentDefense = document.getElementById('opponent-defense');
+        const opponentCardCount = document.getElementById('opponent-card-count');
+        const endTurnButton = document.getElementById('end-turn');
+        const resetGameButton = document.getElementById('reset-game');
+        const gameOverModal = document.getElementById('game-over-modal');
+        const gameResult = document.getElementById('game-result');
+        const gameResultMessage = document.getElementById('game-result-message');
+        const newGameButton = document.getElementById('new-game');
+
+        // Initialize game state
+        fetchGameState();
+
+        // Add event listeners
+        endTurnButton.addEventListener('click', handleEndTurn);
+        resetGameButton.addEventListener('click', handleResetGame);
+        newGameButton.addEventListener('click', handleResetGame);
+
+        // Fetch current game state from server
+        function fetchGameState() {
+            fetch('/play', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'getState' })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        gameState = data.gameState;
+                        updateGameUI();
+
+                        // If it's opponent's turn, poll for changes
+                        if (!gameState.playerTurn && !gameState.gameOver) {
+                            setTimeout(fetchGameState, 1500);
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching game state:', error));
+        }
+
+        // Update UI based on game state
+        function updateGameUI() {
+            // Update turn info
+            turnNumber.textContent = gameState.turn;
+
+            // Update player stats
+            playerHealthValue.textContent = gameState.player.health;
+            playerHealthBar.style.width = `${(gameState.player.health / 30) * 100}%`;
+            playerDefense.textContent = gameState.player.defense;
+            playerCoins.textContent = gameState.player.coins;
+
+            // Update opponent stats
+            opponentHealthValue.textContent = gameState.opponent.health;
+            opponentHealthBar.style.width = `${(gameState.opponent.health / 30) * 100}%`;
+            opponentDefense.textContent = gameState.opponent.defense;
+            opponentCardCount.textContent = gameState.opponent.hand;
+
+            // Update player hand
+            renderPlayerHand();
+
+            // Update game log
+            renderGameLog();
+
+            // Check game state
+            endTurnButton.disabled = !gameState.playerTurn || gameState.gameOver;
+
+            // Show game over modal if game is over
+            if (gameState.gameOver) {
+                const playerWon = gameState.opponent.health <= 0;
+                gameResult.textContent = playerWon ? "Victory!" : "Defeat!";
+                gameResultMessage.textContent = playerWon ?
+                    "You have defeated your opponent!" :
+                    "Your opponent has defeated you!";
+                gameOverModal.classList.remove('hidden');
+            } else {
+                gameOverModal.classList.add('hidden');
+            }
+        }
+
+        // Render player's hand
+        function renderPlayerHand() {
+            playerHand.innerHTML = '';
+
+            gameState.player.hand.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.dataset.index = index;
+
+                // Add affordable class if player has enough coins
+                if (card.cost <= gameState.player.coins) {
+                    cardElement.classList.add('affordable');
+                } else {
+                    cardElement.classList.add('unaffordable');
+                }
+
+                cardElement.innerHTML = `
+                        <div class="card-header">
+                            <div class="card-name">${card.name}</div>
+                            <div class="card-cost">${card.cost}</div>
+                        </div>
+                        <div class="card-image">
+                            <img class="card-avatar" src="${card.image}">
+                        </div>
+                        <div class="card-stats">
+                            <div class="card-attack">ATK: ${card.attack}</div>
+                            <div class="card-defense">DEF: ${card.defense}</div>
+                        </div>
+                    `;
+
+                // Add click handler only if it's player's turn and the card is affordable
+                if (gameState.playerTurn && card.cost <= gameState.player.coins && !gameState.gameOver) {
+                    cardElement.addEventListener('click', () => handlePlayCard(index));
+                }
+
+                playerHand.appendChild(cardElement);
+            });
+        }
+
+        // Render game log
+        function renderGameLog() {
+            logMessages.innerHTML = '';
+
+            gameState.gameLog.slice(-8).forEach(message => {
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                logEntry.textContent = message;
+                logMessages.appendChild(logEntry);
+            });
+
+            // Auto scroll to bottom
+            logMessages.scrollTop = logMessages.scrollHeight;
+        }
+
+        // Handle play card action
+        function handlePlayCard(cardIndex) {
+            if (!gameState.playerTurn || gameState.gameOver) return;
+
+            fetch('/play', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'playCard', cardIndex: cardIndex })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        gameState = data.gameState;
+                        updateGameUI();
+                    }
+                })
+                .catch(error => console.error('Error playing card:', error));
+        }
+
+        // Handle end turn action
+        function handleEndTurn() {
+            if (!gameState.playerTurn || gameState.gameOver) return;
+
+            fetch('/play', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'endTurn' })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        gameState = data.gameState;
+                        updateGameUI();
+
+                        // Start polling for opponent's turn
+                        setTimeout(fetchGameState, 1500);
+                    }
+                })
+                .catch(error => console.error('Error ending turn:', error));
+        }
+
+        // Handle reset game action
+        function handleResetGame() {
+            fetch('/play', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'resetGame' })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        gameState = data.gameState;
+                        updateGameUI();
+                        gameOverModal.classList.add('hidden');
+                    }
+                })
+                .catch(error => console.error('Error resetting game:', error));
+        }
+    });
+</script>
+</body>
+</html>
