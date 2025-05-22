@@ -138,3 +138,97 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+
+.profile-edit {
+    max-width: 600px;
+    margin: 60px auto;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.profile-avatar-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.profile-avatar-block img {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
+    margin-bottom: 10px;
+}
+
+.avatar-btn {
+    background-color: transparent;
+    color: #81d4fa;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    text-decoration: underline;
+}
+
+.avatar-btn:hover {
+    color: #00bcd4;
+}
+
+.avatar-file {
+    display: none;
+}
+
+.profile-form {
+    flex: 1;
+    min-width: 250px;
+}
+
+.profile-form input[type="text"],
+.profile-form input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #eee;
+    color: #333;
+}
+
+.profile-form button {
+    background-color: #00bcd4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.3s ease;
+}
+
+.profile-form button:hover {
+    background-color: #0288d1;
+}
+
+.back-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.back-link a {
+    color: #81d4fa;
+    text-decoration: none;
+}
+
+.back-link a:hover {
+    text-decoration: underline;
+}

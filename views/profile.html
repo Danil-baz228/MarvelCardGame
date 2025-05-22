@@ -6,14 +6,42 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<h1>Редагування профілю</h1>
-<form action="/profile" method="POST">
-    <input type="text" name="username" placeholder="Ім'я користувача" value="{{username}}" required><br>
-    <input type="email" name="email" placeholder="Email" value="{{email}}" required><br>
-    <input type="text" name="avatar_url" placeholder="URL аватару" value="{{avatar_url}}"><br>
-    <button type="submit">Зберегти</button>
+
+<form class="profile-edit" action="/profile" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="current_avatar_url" value="{{avatar_url}}">
+
+    <div class="profile-avatar-block">
+        <img id="avatarPreview" src="{{avatar_url}}" alt="Аватар">
+        <button type="button" class="avatar-btn" onclick="document.getElementById('avatar').click()">🔄 Змінити аватар</button>
+        <input type="file" name="avatar" id="avatar" class="avatar-file" accept="image/*">
+    </div>
+
+    <div class="profile-form">
+        <input type="text" name="username" placeholder="Ім'я користувача" value="{{username}}" required>
+        <input type="email" name="email" placeholder="Email" value="{{email}}" required>
+        <button type="submit">💾 Зберегти</button>
+    </div>
 </form>
 
-<p><a href="/">⬅ Назад</a></p>
+<div class="back-link">
+    <a href="/">⬅ Назад</a>
+</div>
+
+<script>
+    const avatarInput = document.getElementById('avatar');
+    const preview = document.getElementById('avatarPreview');
+
+    avatarInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
 </body>
 </html>

@@ -53,6 +53,12 @@ app.all('/play', playController.handle)
 // 🌐 Универсальный контроллерный роутинг
 app.all('*', (req, res) => {
   const [, controllerName = 'main'] = req.path.split('/');
+
+  // Защита от неправильных имён
+  if (!/^[a-zA-Z0-9_-]+$/.test(controllerName)) {
+    return res.status(404).sendFile(path.resolve('views', '404.html'));
+  }
+
   try {
     const controller = require(`./controllers/${controllerName}Controller`);
     if (typeof controller.handle === 'function') {

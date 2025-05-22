@@ -8,13 +8,19 @@
 </head>
 <body>
 
+<div id="intro-video-wrapper">
+  <video id="intro-video" autoplay muted playsinline>
+    <source src="/video/intro.mp4" type="video/mp4">
+    Ваш браузер не підтримує відео.
+  </video>
+</div>
+
 <header class="site-header">
   <div class="header-inner">
     <h1 class="site-title">🃏 Great Battle</h1>
     <div id="auth-bar" class="auth-bar"></div>
   </div>
 </header>
-
 
 <main class="main-content">
   <section class="welcome-box fade-in">
@@ -36,21 +42,13 @@
 
   <section class="cards-preview fade-in">
     <h3>🃏 Приклади карт</h3>
-    <div class="card-list">
-      <div class="card">
-        <img src="/cardsimg/spiderMan.png" alt="Iron Man">
-        <p><strong>Iron Man</strong><br>🗡 6 ⚔ 4 💰 3</p>
-      </div>
-      <div class="card">
-        <img src="/cardsimg/spiderMan.png" alt="Thanos">
-        <p><strong>Thanos</strong><br>🗡 9 ⚔ 8 💰 5</p>
-      </div>
-      <div class="card">
-        <img src="/cardsimg/spiderMan.png" alt="Spider-Man">
-        <p><strong>Spider-Man</strong><br>🗡 4 ⚔ 3 💰 2</p>
-      </div>
+    <div class="carousel">
+      <button class="arrow left-arrow">⬅</button>
+      <div class="card-container"></div>
+      <button class="arrow right-arrow">➡</button>
     </div>
   </section>
+
 </main>
 
 <footer class="site-footer">
@@ -58,29 +56,113 @@
 </footer>
 
 <script>
-  const authBar = document.getElementById('auth-bar');
-  const actionSection = document.getElementById('action-section');
+  document.addEventListener("DOMContentLoaded", () => {
+    const authBar = document.getElementById('auth-bar');
+    const actionSection = document.getElementById('action-section');
+    const videoWrapper = document.getElementById('intro-video-wrapper');
+    const video = document.getElementById('intro-video');
+    const skipBtn = document.getElementById('skip-intro');
 
-  if (window.user) {
-    const avatar = window.user.avatar_url
-            ? `<img src="${window.user.avatar_url}" class="avatar">`
-            : '';
+    // === 1. Обработка интро-видео ===
+    const versionKey = "introPlayedVersion";
+    const currentVersion = "20240522_012"; // меняй при перезапуске сервера
+    const lastSeenVersion = localStorage.getItem(versionKey);
+    const shouldPlay = lastSeenVersion !== currentVersion;
 
-    authBar.innerHTML = `
-      ${avatar}
-      <span>Привіт, <strong>${window.user.username}</strong></span>
-      <a href="/profile" class="button">Профіль</a>
-      <a href="/auth/logout" class="button">Вийти</a>
-    `;
-    actionSection.innerHTML = `<a href="/play" class="button play-button">🎮 Грати</a>`;
-  } else {
-    authBar.innerHTML = `
-      <a href="/auth/login" class="button">Увійти</a>
-      <a href="/auth/register" class="button">Зареєструватися</a>
-    `;
-    actionSection.innerHTML = `<p><strong>Увійдіть</strong>, щоб почати гру!</p>`;
-  }
+    if (!shouldPlay) {
+      videoWrapper.style.display = "none";
+    } else {
+      document.body.style.overflow = "hidden";
+
+      video.addEventListener("ended", () => {
+        videoWrapper.style.display = "none";
+        document.body.style.overflow = "";
+        localStorage.setItem(versionKey, currentVersion);
+      });
+
+      // Таймер на случай, если видео не завершилось
+      setTimeout(() => {
+        if (videoWrapper.style.display !== "none") {
+          videoWrapper.style.display = "none";
+          document.body.style.overflow = "";
+          localStorage.setItem(versionKey, currentVersion);
+        }
+      }, 30000);
+    }
+
+    // === 2. Авторизация и панель действий ===
+    if (window.user) {
+      const avatar = window.user.avatar_url
+              ? `<img src="${window.user.avatar_url}" class="avatar">`
+              : '';
+
+      authBar.innerHTML = `
+        ${avatar}
+        <span>Привіт, <strong>${window.user.username}</strong></span>
+        <a href="/profile" class="button">Профіль</a>
+        <a href="/auth/logout" class="button">Вийти</a>
+      `;
+      actionSection.innerHTML = `<a href="/play" class="button play-button">🎮 Грати</a>`;
+    } else {
+      authBar.innerHTML = `
+        <a href="/auth/login" class="button">Увійти</a>
+        <a href="/auth/register" class="button">Зареєструватися</a>
+      `;
+      actionSection.innerHTML = `<p><strong>Увійдіть</strong>, щоб почати гру!</p>`;
+    }
+
+    // === 3. Слайдер карт ===
+    const cardsData = [
+      { name: "Iron Man", atk: 6, def: 4, cost: 3, img: "/cardsimg/IronMan.png" },
+      { name: "Thor", atk: 9, def: 8, cost: 5, img: "/cardsimg/thor.png" },
+      { name: "Spider-Man", atk: 4, def: 3, cost: 2, img: "/cardsimg/spiderMan.png" },
+      { name: "Hulk", atk: 8, def: 6, cost: 4, img: "/cardsimg/hulk.png" },
+      { name: "Captain America", atk: 5, def: 5, cost: 3, img: "/cardsimg/CaptainAmerica.png" },
+      { name: "Black Widow", atk: 3, def: 4, cost: 2, img: "/cardsimg/BlackWidow.png" },
+    ];
+
+    let currentIndex = 0;
+
+    const container = document.querySelector('.card-container');
+    const leftArrow = document.querySelector('.left-arrow');
+    const rightArrow = document.querySelector('.right-arrow');
+
+    function renderCards() {
+      const cardsToShow = cardsData.slice(currentIndex, currentIndex + 3);
+      container.innerHTML = cardsToShow.map(card => `
+        <div class="card">
+          <img src="${card.img}" alt="${card.name}" loading="lazy">
+          <p><strong>${card.name}</strong><br>🗡 ${card.atk} ⚔ ${card.def} 💰 ${card.cost}</p>
+        </div>
+      `).join('');
+    }
+
+    function changeCards(direction) {
+      container.classList.add('fade-out');
+
+      setTimeout(() => {
+        currentIndex += direction * 3;
+
+        if (currentIndex >= cardsData.length) currentIndex = 0;
+        if (currentIndex < 0) currentIndex = cardsData.length - 3;
+
+        renderCards();
+        container.classList.remove('fade-out');
+        container.classList.add('fade-in');
+
+        setTimeout(() => {
+          container.classList.remove('fade-in');
+        }, 600);
+      }, 300);
+    }
+
+    leftArrow.addEventListener('click', () => changeCards(-1));
+    rightArrow.addEventListener('click', () => changeCards(1));
+
+    renderCards();
+  });
 </script>
+
 
 </body>
 </html>
