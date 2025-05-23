@@ -26,7 +26,7 @@ CREATE TABLE cards (
 CREATE TABLE matches (
                          id INT AUTO_INCREMENT PRIMARY KEY,
                          player1_id INT NOT NULL,
-                         player2_id INT NOT NULL,
+                         player2_id INT DEFAULT NULL,
                          winner_id INT DEFAULT NULL,
                          started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                          ended_at DATETIME DEFAULT NULL,
@@ -34,6 +34,7 @@ CREATE TABLE matches (
                          FOREIGN KEY (player2_id) REFERENCES users(id),
                          FOREIGN KEY (winner_id) REFERENCES users(id)
 );
+
 
 CREATE TABLE match_cards (
                              id INT AUTO_INCREMENT PRIMARY KEY,

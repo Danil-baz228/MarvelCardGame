@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Онлайн игра</title>
+</head>
+<body>
+<h2>Онлайн режим</h2>
+
+<!-- КНОПКА СОЗДАНИЯ ИГРЫ -->
+<button type="button" onclick="createGame()">Создать новую игру</button>
+
+<!-- ПРИСОЕДИНИТЬСЯ к игре -->
+<form method="POST" action="/play/online/join">
+  <input name="gameId" placeholder="Введите ID игры" required>
+  <button type="submit">Присоединиться</button>
+</form>
+
+<script>
+  function createGame() {
+    console.log("Создание игры..."); // ← проверь, вызывается ли
+
+    fetch('/play/online/create', {
+      method: 'POST'
+    })
+            .then(res => {
+              console.log('Ответ от сервера получен');
+              return res.json();
+            })
+            .then(data => {
+              console.log('JSON:', data); // ← что приходит?
+              if (data.matchId) {
+                console.log('Перенаправляем на матч:', data.matchId);
+                window.location.href = `/play/online/${data.matchId}`;
+              } else {
+                alert("Ошибка: матч не создан");
+              }
+            })
+            .catch(err => {
+              console.error("Ошибка:", err);
+              alert("Ошибка при создании игры");
+            });
+  }
+</script>
+
+
+
+</body>
+</html>
