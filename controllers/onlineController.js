@@ -102,45 +102,49 @@ exports.handleBattle = async (req, res) => {
     const userId = req.session.user.id;
     const matchId = req.params.matchId;
 
-    const [rows] = await db.query('SELECT username FROM users WHERE id = ?', [userId]);
-    const username = rows[0]?.username || `Гравець ${userId}`;
+    const [[user]] = await db.query('SELECT username FROM users WHERE id = ?', [userId]);
+    const username = user?.username || `Гравець ${userId}`;
 
     res.send(`
         <!DOCTYPE html>
         <html lang="uk">
-        <head><meta charset="UTF-8"><title>Бій</title></head>
+        <head>
+            <meta charset="UTF-8">
+            <title>Матч №${matchId}</title>
+            <style>
+                .card { border: 1px solid #ccc; padding: 10px; margin: 5px; display: inline-block; width: 120px; text-align: center; }
+                .card img { width: 100px; height: 100px; object-fit: cover; }
+                #log { margin-top: 20px; }
+            </style>
+        </head>
         <body>
             <h1>Матч №${matchId}</h1>
-            <h2>Ваші карти:</h2>
+            <h2>${username} — HP: <span id="hp">30</span></h2>
+
             <div id="cards"></div>
             <button onclick="endTurn()">Кінець ходу</button>
+
+            <div id="log"></div>
 
             <script src="/socket.io/socket.io.js"></script>
             <script>
                 const matchId = ${matchId};
                 const userId = ${userId};
                 const username = "${username}";
+                let hp = 30;
 
                 const socket = io();
                 socket.emit('join_match', { matchId, userId, username });
 
-                socket.on('player_joined', ({ username }) => {
-                    const log = document.createElement('p');
-                    log.textContent = username + ' приєднався до матчу';
-                    document.body.appendChild(log);
-                });
-
+                socket.on('player_joined', ({ username }) => log(username + ' приєднався'));
                 socket.on('card_played', ({ username, card }) => {
-                    const log = document.createElement('p');
-                    log.textContent = username + ' зіграв карту: ' + card.name;
-                    document.body.appendChild(log);
+                    if (username !== window.username) {
+                        hp -= Math.max(0, card.attack);
+                        document.getElementById('hp').textContent = hp;
+                        log(username + ' атакує на ' + card.attack + ' 🗡️');
+                    }
                 });
-
-                socket.on('turn_ended', ({ username }) => {
-                    const log = document.createElement('p');
-                    log.textContent = username + ' завершив хід';
-                    document.body.appendChild(log);
-                });
+                socket.on('turn_ended', ({ username }) => log(username + ' завершив хід'));
 
                 function playCard(card) {
                     socket.emit('play_card', { matchId, userId, username, card });
@@ -150,14 +154,26 @@ exports.handleBattle = async (req, res) => {
                     socket.emit('end_turn', { matchId, userId, username });
                 }
 
-                fetch('/api/match/${matchId}/hand')
+                function log(msg) {
+                    const div = document.createElement('div');
+                    div.textContent = msg;
+                    document.getElementById('log').appendChild(div);
+                }
+
+                fetch('/api/match/' + matchId + '/hand')
                     .then(res => res.json())
                     .then(data => {
                         const container = document.getElementById('cards');
                         data.cards.forEach(card => {
-                            const btn = document.createElement('button');
-                            btn.textContent = (card.emoji || '') + ' ' + card.name;
-                            btn.onclick = () => playCard(card);
+                            const btn = document.createElement('div');
+                            btn.className = 'card';
+                            btn.innerHTML = \`
+                                <strong>\${card.name}</strong><br>
+                                <img src="\${card.image_url}" alt=""><br>
+                                🗡️ \${card.attack} | 🛡️ \${card.defense}<br>
+                                <button>Грати</button>
+                            \`;
+                            btn.querySelector('button').onclick = () => playCard(card);
                             container.appendChild(btn);
                         });
                     });
