@@ -1,8 +1,14 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const http = require('http');
 
 const app = express();
+const server = http.createServer(app);
+
+const socket = require('./socket'); // ⬅️ окремий файл для Socket.IO
+const io = socket.init(server);     // ⬅️ ініціалізація
+
 const PORT = 3000;
 
 app.use(express.static('public'));
@@ -15,46 +21,45 @@ app.use(session({
   saveUninitialized: true
 }));
 
-
 function ensureAuth(req, res, next) {
   const publicPaths = [
-    '/',
-    '/login',
-    '/register',
-    '/auth/login',
-    '/auth/register',
+    '/', '/login', '/register',
+    '/auth/login', '/auth/register',
     '/reminder'
   ];
-
   if (!req.session.user && !publicPaths.includes(req.path)) {
     return res.redirect('/');
   }
-
   next();
 }
 
 app.use(ensureAuth);
 
+// Контроллери
+const mainController = require('./controllers/mainController');
+const profileController = require('./controllers/profileController');
+const playController = require('./controllers/playController');
+const onlineController = require('./controllers/onlineController');
+const singleController = require('./controllers/playSingleController');
+const apiController = require('./controllers/apiController');
+app.get('/api/match/:matchId/hand', apiController.getHand);
+
 app.get('/login', (req, res) => res.redirect('/auth/login'));
 app.get('/register', (req, res) => res.redirect('/auth/register'));
 
-// 🏠 Главная
-const mainController = require('./controllers/mainController');
 app.get('/', mainController.handle);
-
-// 👤 Профиль
-const profileController = require('./controllers/profileController');
 app.all('/profile', profileController.handle);
+app.get('/play', playController.handle);
+app.all('/play/single', singleController.handle);
+app.get('/play/online-menu', playController.onlineMenu);
+app.post('/play/online/create', onlineController.createGame);
+app.post('/play/online/join', onlineController.joinGame);
+app.get('/play/online/:gameId', onlineController.handleGame);
+app.get('/play/online/status/:matchId', onlineController.checkStatus);
+app.get('/play/online/battle/:matchId', onlineController.handleBattle);
 
-// 🎮 Play Game
-const playController = require('./controllers/playController');
-app.all('/play', playController.handle)
-
-// 🌐 Универсальный контроллерный роутинг
 app.all('*', (req, res) => {
   const [, controllerName = 'main'] = req.path.split('/');
-
-  // Защита от неправильных имён
   if (!/^[a-zA-Z0-9_-]+$/.test(controllerName)) {
     return res.status(404).sendFile(path.resolve('views', '404.html'));
   }
@@ -72,7 +77,6 @@ app.all('*', (req, res) => {
   }
 });
 
-// ▶ Запуск
-app.listen(PORT, () => {
-  console.log(`App running on http://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`🚀 Гра запущена на http://localhost:${PORT}`);
 });

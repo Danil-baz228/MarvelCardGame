@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Онлайн матч</title>
+</head>
+<body>
+<h1>Ви в онлайн-матчі!</h1>
+<p>Гра № <span id="match-id"></span></p>
+<p>Очікування суперника або початок бою...</p>
+
+<script>
+    const matchId = window.location.pathname.split('/').pop();
+    document.getElementById('match-id').textContent = matchId;
+
+    setInterval(() => {
+        fetch(`/play/online/status/${matchId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.ready) {
+                    window.location.href = `/play/online/battle/${matchId}`;
+                }
+            });
+    }, 2000);
+</script>
+</body>
+</html>
