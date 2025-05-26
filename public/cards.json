@@ -1,0 +1,142 @@
+[
+  {
+    "name": "Banshee",
+    "img": "/cardsimg/banshee.jpg",
+    "atk": 3,
+    "def": 3,
+    "cost": 2
+  },
+  {
+    "name": "Beast",
+    "img": "/cardsimg/Beast.jpg",
+    "atk": 3,
+    "def": 3,
+    "cost": 2
+  },
+  {
+    "name": "Blackwidow",
+    "img": "/cardsimg/blackwidow.jpg",
+    "atk": 5,
+    "def": 4,
+    "cost": 2
+  },
+  {
+    "name": "Brucebanner",
+    "img": "/cardsimg/brucebanner.jpg",
+    "atk": 3,
+    "def": 3,
+    "cost": 2
+  },
+  {
+    "name": "Captainamerica",
+    "img": "/cardsimg/captainamerica.jpg",
+    "atk": 9,
+    "def": 8,
+    "cost": 4
+  },
+  {
+    "name": "Colossus",
+    "img": "/cardsimg/colossus.jpg",
+    "atk": 7,
+    "def": 8,
+    "cost": 4
+  },
+  {
+    "name": "Falcon",
+    "img": "/cardsimg/falcon.jpg",
+    "atk": 2,
+    "def": 2,
+    "cost": 1
+  },
+  {
+    "name": "Ghostrider",
+    "img": "/cardsimg/ghostrider.jpg",
+    "atk": 9,
+    "def": 7,
+    "cost": 4
+  },
+  {
+    "name": "Hulk",
+    "img": "/cardsimg/hulk.jpg",
+    "atk": 7,
+    "def": 7,
+    "cost": 4
+  },
+  {
+    "name": "Ironman",
+    "img": "/cardsimg/ironman.jpg",
+    "atk": 10,
+    "def": 7,
+    "cost": 5
+  },
+  {
+    "name": "Loki",
+    "img": "/cardsimg/loki.jpg",
+    "atk": 5,
+    "def": 4,
+    "cost": 2
+  },
+  {
+    "name": "Mystique",
+    "img": "/cardsimg/mystique.jpg",
+    "atk": 6,
+    "def": 5,
+    "cost": 2
+  },
+  {
+    "name": "Nova",
+    "img": "/cardsimg/nova.jpg",
+    "atk": 5,
+    "def": 4,
+    "cost": 2
+  },
+  {
+    "name": "Redskull",
+    "img": "/cardsimg/redskull.jpg",
+    "atk": 6,
+    "def": 5,
+    "cost": 2
+  },
+  {
+    "name": "Silversurfer",
+    "img": "/cardsimg/silversurfer.jpg",
+    "atk": 4,
+    "def": 3,
+    "cost": 2
+  },
+  {
+    "name": "Spiderman",
+    "img": "/cardsimg/spiderman.jpg",
+    "atk": 4,
+    "def": 3,
+    "cost": 3
+  },
+  {
+    "name": "Storm",
+    "img": "/cardsimg/storm.jpg",
+    "atk": 6,
+    "def": 5,
+    "cost": 3
+  },
+  {
+    "name": "Thor",
+    "img": "/cardsimg/thor.jpg",
+    "atk": 7,
+    "def": 7,
+    "cost": 4
+  },
+  {
+    "name": "Vulture",
+    "img": "/cardsimg/vulture.jpg",
+    "atk": 5,
+    "def": 4,
+    "cost": 3
+  },
+  {
+    "name": "Wolverine",
+    "img": "/cardsimg/wolverine.jpg",
+    "atk": 4,
+    "def": 3,
+    "cost": 3
+  }
+]

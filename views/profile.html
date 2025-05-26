@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Редагування профілю</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/profile.css">
 </head>
 <body>
 
-<form class="profile-edit" action="/profile" method="POST" enctype="multipart/form-data">
+<form class="profile-edit fade-in" id="profileForm" enctype="multipart/form-data">
     <input type="hidden" name="current_avatar_url" value="{{avatar_url}}">
 
     <div class="profile-avatar-block">
@@ -15,33 +15,119 @@
         <button type="button" class="avatar-btn" onclick="document.getElementById('avatar').click()">🔄 Змінити аватар</button>
         <input type="file" name="avatar" id="avatar" class="avatar-file" accept="image/*">
     </div>
-
     <div class="profile-form">
-        <input type="text" name="username" placeholder="Ім'я користувача" value="{{username}}" required>
-        <input type="email" name="email" placeholder="Email" value="{{email}}" required>
+        <div class="form-row">
+            <label for="username">👤 Ім’я користувача</label>
+            <input type="text" id="username" name="username" value="{{username}}" required readonly>
+            <a href="#" class="edit-link" onclick="enableEdit('username', event)">🔧 Змінити логін</a>
+        </div>
+
+        <div class="form-row">
+            <label for="email">📧 Email</label>
+            <input type="email" id="email" name="email" value="{{email}}" required readonly>
+            <a href="#" class="edit-link" onclick="enableEdit('email', event)">🔧 Змінити email</a>
+        </div>
+
+
+
+        <div class="form-row">
+            <label for="password-current">🔒 Змінити пароль</label>
+            <input type="password" id="password-current" name="password_current" placeholder="Поточний пароль">
+            <input type="password" id="password-new" name="password_new" placeholder="Новий пароль">
+        </div>
+
         <button type="submit">💾 Зберегти</button>
+        <div class="back-link">
+            <a href="/">⬅ Назад</a>
     </div>
-</form>
 
-<div class="back-link">
-    <a href="/">⬅ Назад</a>
-</div>
 
-<script>
-    const avatarInput = document.getElementById('avatar');
-    const preview = document.getElementById('avatarPreview');
 
-    avatarInput.addEventListener('change', function () {
-        const file = this.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
+<!-- Уведомления -->
+        <div id="error-toast" class="toast error">❌ Це ім’я вже зайняте</div>
+        <div id="success-toast" class="toast success">✅ Налаштування збережено!</div>
+        <div id="toast-wrong-password" class="toast error">❌ Неправильний поточний пароль</div>
+        <div id="toast-password-too-short" class="toast error">❌ Новий пароль надто короткий (мінімум 6 символів)</div>
+        <div id="toast-same-password" class="toast error">❌ Новий пароль співпадає з поточним</div>
+
+
+        <script>
+            const form = document.getElementById('profileForm');
+            const avatarInput = document.getElementById('avatar');
+            const preview = document.getElementById('avatarPreview');
+
+            if (avatarInput && preview) {
+                avatarInput.addEventListener('change', function () {
+                    const file = this.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            preview.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            const showToast = (id) => {
+                const toast = document.getElementById(id);
+                if (!toast) return;
+                toast.classList.add("show");
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 3000);
             };
-            reader.readAsDataURL(file);
-        }
-    });
-</script>
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+
+                try {
+                    const res = await fetch('/profile', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await res.json();
+
+                    if (result.success) {
+                        showToast("success-toast");
+                    } else {
+                        switch (result.error) {
+                            case "duplicate_username":
+                                showToast("error-toast");
+                                break;
+                            case "wrong_password":
+                                showToast("toast-wrong-password");
+                                break;
+                            case "password_too_short":
+                                showToast("toast-password-too-short");
+                                break;
+                            case "same_password":
+                                showToast("toast-same-password");
+                                break;
+                            default:
+                                showToast("error-toast");
+                        }
+                    }
+
+                } catch (err) {
+                    console.error("Помилка:", err);
+                    showToast("error-toast");
+                }
+            });
+
+            function enableEdit(fieldId, event) {
+                event.preventDefault();
+                const input = document.getElementById(fieldId);
+                if (input && input.hasAttribute('readonly')) {
+                    input.removeAttribute('readonly');
+                    input.focus();
+                }
+            }
+        </script>
+
 
 </body>
 </html>
