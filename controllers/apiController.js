@@ -20,3 +20,29 @@ exports.getHand = async (req, res) => {
         res.status(500).json({ error: 'Помилка сервера' });
     }
 };
+
+exports.getCardById = async (req, res) => {
+    const cardId = req.params.cardId;
+    const [[card]] = await db.query('SELECT * FROM cards WHERE id = ?', [cardId]);
+    if (!card) return res.status(404).json({ error: 'Карта не знайдена' });
+    res.json(card);
+};
+
+
+exports.drawCard = async (req, res) => {
+    const { matchId, userId } = req.body;
+
+    // Найти случайную карту
+    const [[card]] = await db.query('SELECT * FROM cards ORDER BY RAND() LIMIT 1');
+
+    // Добавить её в match_cards
+    await db.query(`
+        INSERT INTO match_cards (match_id, user_id, card_id, in_hand)
+        VALUES (?, ?, ?, true)
+    `, [matchId, userId, card.id]);
+
+    // Вернуть карту
+    res.json({ cardId: card.id });
+};
+
+

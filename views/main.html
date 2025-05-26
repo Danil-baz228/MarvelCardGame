@@ -112,29 +112,21 @@
     }
 
     // === 3. Слайдер карт ===
-    const cardsData = [
-      { name: "Iron Man", atk: 6, def: 4, cost: 3, img: "/cardsimg/IronMan.png" },
-      { name: "Thor", atk: 9, def: 8, cost: 5, img: "/cardsimg/thor.png" },
-      { name: "Spider-Man", atk: 4, def: 3, cost: 2, img: "/cardsimg/spiderMan.png" },
-      { name: "Hulk", atk: 8, def: 6, cost: 4, img: "/cardsimg/hulk.png" },
-      { name: "Captain America", atk: 5, def: 5, cost: 3, img: "/cardsimg/CaptainAmerica.png" },
-      { name: "Black Widow", atk: 3, def: 4, cost: 2, img: "/cardsimg/BlackWidow.png" },
-    ];
-
-    let currentIndex = 0;
+    let cardsData = [];
 
     const container = document.querySelector('.card-container');
     const leftArrow = document.querySelector('.left-arrow');
     const rightArrow = document.querySelector('.right-arrow');
+    let currentIndex = 0;
 
     function renderCards() {
       const cardsToShow = cardsData.slice(currentIndex, currentIndex + 3);
       container.innerHTML = cardsToShow.map(card => `
-        <div class="card">
-          <img src="${card.img}" alt="${card.name}" loading="lazy">
-          <p><strong>${card.name}</strong><br>🗡 ${card.atk} ⚔ ${card.def} 💰 ${card.cost}</p>
-        </div>
-      `).join('');
+    <div class="card">
+      <img src="${card.img}" alt="${card.name}" loading="lazy">
+      <p><strong>${card.name}</strong><br>🗡 ${card.atk} ⚔ ${card.def} 💰 ${card.cost}</p>
+    </div>
+  `).join('');
     }
 
     function changeCards(direction) {
@@ -159,7 +151,16 @@
     leftArrow.addEventListener('click', () => changeCards(-1));
     rightArrow.addEventListener('click', () => changeCards(1));
 
-    renderCards();
+    fetch('/cards.json')
+            .then(res => res.json())
+            .then(data => {
+              cardsData = data;
+              renderCards();
+            })
+            .catch(err => {
+              console.error('Не вдалося завантажити карти:', err);
+              container.innerHTML = '<p>Помилка завантаження карт.</p>';
+            });
   });
 </script>
 

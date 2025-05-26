@@ -43,6 +43,8 @@ const onlineController = require('./controllers/onlineController');
 const singleController = require('./controllers/playSingleController');
 const apiController = require('./controllers/apiController');
 app.get('/api/match/:matchId/hand', apiController.getHand);
+app.post('/api/match/:matchId/draw', apiController.drawCard);
+app.get('/api/card/:cardId', apiController.getCardById);
 
 app.get('/login', (req, res) => res.redirect('/auth/login'));
 app.get('/register', (req, res) => res.redirect('/auth/register'));
@@ -58,14 +60,21 @@ app.get('/play/online/:gameId', onlineController.handleGame);
 app.get('/play/online/status/:matchId', onlineController.checkStatus);
 app.get('/play/online/battle/:matchId', onlineController.handleBattle);
 
+const fs = require('fs');
+
 app.all('*', (req, res) => {
   const [, controllerName = 'main'] = req.path.split('/');
   if (!/^[a-zA-Z0-9_-]+$/.test(controllerName)) {
     return res.status(404).sendFile(path.resolve('views', '404.html'));
   }
 
+  const controllerPath = path.resolve(__dirname, 'controllers', `${controllerName}Controller.js`);
+  if (!fs.existsSync(controllerPath)) {
+    return res.status(404).sendFile(path.resolve('views', '404.html'));
+  }
+
   try {
-    const controller = require(`./controllers/${controllerName}Controller`);
+    const controller = require(controllerPath);
     if (typeof controller.handle === 'function') {
       controller.handle(req, res);
     } else {
@@ -76,6 +85,7 @@ app.all('*', (req, res) => {
     res.status(404).sendFile(path.resolve('views', '404.html'));
   }
 });
+
 
 server.listen(PORT, () => {
   console.log(`🚀 Гра запущена на http://localhost:${PORT}`);
