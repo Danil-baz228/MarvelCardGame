@@ -9,7 +9,7 @@ const server = http.createServer(app);
 const socket = require('./socket'); // ⬅️ окремий файл для Socket.IO
 const io = socket.init(server);     // ⬅️ ініціалізація
 
-const PORT = 3000;
+const PORT = 3001;
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));

@@ -1,49 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <title>Онлайн игра</title>
+  <title>Онлайн гра</title>
+  <link rel="stylesheet" href="/online-menu.css">
 </head>
 <body>
-<h2>Онлайн режим</h2>
 
-<!-- КНОПКА СОЗДАНИЯ ИГРЫ -->
-<button type="button" onclick="createGame()">Создать новую игру</button>
+<!-- ХЕДЕР -->
+<header class="site-header">
+  <div class="header-inner">
+    <h1 class="site-title">🃏 Great Battle</h1>
+    <div id="auth-bar" class="auth-bar"></div>
+  </div>
+</header>
 
-<!-- ПРИСОЕДИНИТЬСЯ к игре -->
-<form method="POST" action="/play/online/join">
-  <input name="gameId" placeholder="Введите ID игры" required>
-  <button type="submit">Присоединиться</button>
-</form>
+<!-- КОНТЕНТ -->
+<main class="main-content">
+  <section class="mode-selection fade-in">
+    <h1>Онлайн режим</h1>
 
+    <!-- КНОПКА СОЗДАНИЯ ИГРЫ -->
+    <button type="button" onclick="createGame()">Створити нову гру</button>
+
+    <!-- ПРИСОЕДИНИТЬСЯ К ИГРЕ -->
+    <form method="POST" action="/play/online/join">
+      <input name="gameId" placeholder="Введіть ID гри" required>
+      <br>
+      <button type="submit">Приєднатися</button>
+    </form>
+
+    <!-- КНОПКА НАЗАД -->
+    <button class="back-button" onclick="location.href='/play'">← Назад</button>
+  </section>
+</main>
+
+<!-- ФУТЕР -->
+<footer class="site-footer">
+  <p>🔗 Звʼязок: <a href="https://t.me/Marshall949">@Marshall949</a>, <a href="https://t.me/danilbaz">@danilbaz</a>, <a href="https://t.me/MxmChb">@MxmChb</a></p>
+</footer>
+
+<!-- СКРИПТ СОЗДАНИЯ ИГРЫ -->
 <script>
   function createGame() {
-    console.log("Создание игры..."); // ← проверь, вызывается ли
+    console.log("Створення гри...");
 
     fetch('/play/online/create', {
       method: 'POST'
     })
             .then(res => {
-              console.log('Ответ от сервера получен');
+              console.log('Відповідь сервера отримано');
               return res.json();
             })
             .then(data => {
-              console.log('JSON:', data); // ← что приходит?
+              console.log('JSON:', data);
               if (data.matchId) {
-                console.log('Перенаправляем на матч:', data.matchId);
+                console.log('Переходимо до матчу:', data.matchId);
                 window.location.href = `/play/online/${data.matchId}`;
               } else {
-                alert("Ошибка: матч не создан");
+                alert("Помилка: матч не створено");
               }
             })
             .catch(err => {
-              console.error("Ошибка:", err);
-              alert("Ошибка при создании игры");
+              console.error("Помилка:", err);
+              alert("Помилка при створенні гри");
             });
   }
 </script>
-
-
 
 </body>
 </html>

@@ -2,13 +2,52 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Онлайн матч</title>
+    <title>Очікування суперника</title>
+    <link rel="stylesheet" href="/playgame.css">
+    <style>
+        .loader {
+            margin: 20px auto;
+            border: 6px solid rgba(255, 255, 255, 0.2);
+            border-top: 6px solid #00bcd4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-<h1>Ви в онлайн-матчі!</h1>
-<p>Гра № <span id="match-id"></span></p>
-<p>Очікування суперника або початок бою...</p>
 
+<!-- ХЕДЕР -->
+<header class="site-header">
+    <div class="header-inner">
+        <h1 class="site-title">🃏 Great Battle</h1>
+        <div id="auth-bar" class="auth-bar"></div>
+    </div>
+</header>
+
+<!-- КОНТЕНТ -->
+<main class="main-content">
+    <section class="mode-selection fade-in">
+        <h1>Ви в онлайн-матчі!</h1>
+        <p><strong>Гра № <span id="match-id"></span></strong></p>
+        <p>Очікування суперника або початок бою...</p>
+        <div class="loader"></div>
+        <button class="back-button" onclick="location.href='/play/online-menu'">← Назад</button>
+    </section>
+</main>
+
+<!-- ФУТЕР -->
+<footer class="site-footer">
+    <p>🔗 Звʼязок: <a href="https://t.me/Marshall949">@Marshall949</a>, <a href="https://t.me/danilbaz">@danilbaz</a>, <a href="https://t.me/MxmChb">@MxmChb</a></p>
+</footer>
+
+<!-- СКРИПТ -->
 <script>
     const matchId = window.location.pathname.split('/').pop();
     document.getElementById('match-id').textContent = matchId;
@@ -23,5 +62,6 @@
             });
     }, 2000);
 </script>
+
 </body>
 </html>

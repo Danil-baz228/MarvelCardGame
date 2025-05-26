@@ -1,10 +1,55 @@
 const db = require('../db');
 const path = require('path');
-const io = require('../socket').getIO(); // ⬅️ правильно підключаємо сокет
+const io = require('../socket').getIO();
 
+// === Универсальный шаблон страницы помилки ===
+function renderErrorPage(title, message, backLink = '/play') {
+    return `
+    <!DOCTYPE html>
+    <html lang="uk">
+    <head>
+      <meta charset="UTF-8">
+      <title>${title}</title>
+      <link rel="stylesheet" href="/error.css">
+    </head>
+    <body>
+
+      <!-- ХЕДЕР -->
+      <header class="site-header">
+        <div class="header-inner">
+          <h1 class="site-title">🃏 Great Battle</h1>
+          <div id="auth-bar" class="auth-bar"></div>
+        </div>
+      </header>
+
+      <!-- КОНТЕНТ -->
+      <main class="main-content fade-in">
+        <section class="mode-selection">
+          <h1>${title}</h1>
+          <p>${message}</p>
+          <button class="back-button" onclick="location.href='/play/online-menu'">← Назад</button>
+        </section>
+      </main>
+
+      <!-- ФУТЕР -->
+      <footer class="site-footer">
+        <p>🔗 Звʼязок: 
+          <a href="https://t.me/Marshall949">@Marshall949</a>, 
+          <a href="https://t.me/danilbaz">@danilbaz</a>, 
+          <a href="https://t.me/MxmChb">@MxmChb</a> | 
+          GitHub: <a href="https://github.com/Danil-baz228/MarvelCardGame">MarvelCardGame</a>
+        </p>
+      </footer>
+
+    </body>
+    </html>
+  `;
+}
+
+// === Створити гру ===
 exports.createGame = async (req, res) => {
     const userId = req.session.user?.id;
-    if (!userId) return res.status(403).send('Немає сесії');
+    if (!userId) return res.status(403).send(renderErrorPage("🔒 Немає сесії", "Будь ласка, увійдіть у свій акаунт", "/auth/login"));
 
     try {
         const [results] = await db.query(
@@ -16,32 +61,33 @@ exports.createGame = async (req, res) => {
         res.json({ matchId });
     } catch (err) {
         console.error('❌ Помилка при створенні матчу:', err);
-        res.status(500).send('Помилка БД');
+        res.status(500).send(renderErrorPage("💥 Помилка БД", "Не вдалося створити гру. Спробуйте пізніше."));
     }
 };
 
+// === Приєднатися до гри ===
 exports.joinGame = async (req, res) => {
     const matchId = req.body.gameId;
     const userId = req.session.user?.id;
 
     try {
         const [rows] = await db.query('SELECT * FROM matches WHERE id = ?', [matchId]);
-        if (rows.length === 0) return res.send('Матч не знайдено');
+        if (rows.length === 0) {
+            return res.status(404).send(renderErrorPage("❌ Матч не знайдено", "Перевірте ID гри або спробуйте ще раз."));
+        }
 
         const match = rows[0];
 
         if (match.player2_id && match.player2_id !== 0) {
-            return res.send('Матч вже заповнений');
+            return res.status(409).send(renderErrorPage("⚠️ Матч вже заповнений", "Цей матч уже має двох гравців."));
         }
 
-        if (match.player1_id === userId) {
-            return res.send('Не можна приєднатися до власного матчу');
+        if (match.player1_id == userId) {
+            return res.status(400).send(renderErrorPage("🚫 Неможливо приєднатися", "Ви не можете приєднатися до власного матчу."));
         }
 
-        // Випадковим чином обираємо, хто перший ходить
         const firstTurnId = Math.random() < 0.5 ? match.player1_id : userId;
 
-        // Оновлюємо одразу player2 і поточний хід
         await db.query(
             'UPDATE matches SET player2_id = ?, current_turn_id = ? WHERE id = ?',
             [userId, firstTurnId, matchId]
@@ -69,7 +115,7 @@ exports.joinGame = async (req, res) => {
         res.redirect(`/play/online/${matchId}`);
     } catch (err) {
         console.error('❌ Помилка при приєднанні до матчу:', err);
-        res.status(500).send('Помилка сервера');
+        res.status(500).send(renderErrorPage("💥 Помилка сервера", "Не вдалося приєднатися до матчу. Спробуйте пізніше."));
     }
 };
 
@@ -93,9 +139,14 @@ const giveStartingCards = (userId, matchId) => {
         });
 };
 
+// === Відображення гри ===
 exports.handleGame = async (req, res) => {
-    const userId = req.session.user.id;
+    const userId = req.session.user?.id;
     const matchId = req.params.gameId;
+
+    if (!userId) {
+        return res.status(403).send(renderErrorPage("🔒 Немає сесії", "Будь ласка, увійдіть у свій акаунт", "/auth/login"));
+    }
 
     try {
         const [existingCards] = await db.query(
@@ -110,10 +161,11 @@ exports.handleGame = async (req, res) => {
         res.sendFile(path.resolve('views', 'online-game.html'));
     } catch (err) {
         console.error('❌ Помилка у handleGame:', err);
-        res.status(500).send('Помилка при завантаженні гри');
+        res.status(500).send(renderErrorPage("💥 Помилка при завантаженні гри", "Спробуйте оновити сторінку або почати новий матч."));
     }
 };
 
+// === Перевірка статусу підключення ===
 exports.checkStatus = async (req, res) => {
     const matchId = req.params.matchId;
 

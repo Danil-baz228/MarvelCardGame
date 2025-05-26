@@ -11,7 +11,7 @@
     <input type="hidden" name="current_avatar_url" value="{{avatar_url}}">
 
     <div class="profile-avatar-block">
-        <img id="avatarPreview" src="{{avatar_url}}" alt="Аватар">
+        <img id="avatarPreview" src="{{avatar_url}}" onerror="this.onerror=null;this.src='/uploads/avatars/images.jpg'" alt="Аватар">
         <button type="button" class="avatar-btn" onclick="document.getElementById('avatar').click()">🔄 Змінити аватар</button>
         <input type="file" name="avatar" id="avatar" class="avatar-file" accept="image/*">
     </div>
@@ -40,8 +40,6 @@
         <div class="back-link">
             <a href="/">⬅ Назад</a>
     </div>
-
-
 
 <!-- Уведомления -->
         <div id="error-toast" class="toast error">❌ Це ім’я вже зайняте</div>

@@ -8,7 +8,7 @@
   },
   {
     "name": "Beast",
-    "img": "/cardsimg/Beast.jpg",
+    "img": "/cardsimg/beast.jpg",
     "atk": 3,
     "def": 3,
     "cost": 2
