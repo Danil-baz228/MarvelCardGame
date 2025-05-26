@@ -59,6 +59,7 @@ app.post('/play/online/join', onlineController.joinGame);
 app.get('/play/online/:gameId', onlineController.handleGame);
 app.get('/play/online/status/:matchId', onlineController.checkStatus);
 app.get('/play/online/battle/:matchId', onlineController.handleBattle);
+app.get('/api/match/:matchId/turn', onlineController.getCurrentTurn);
 
 const fs = require('fs');
 
