@@ -1,13 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Выбор режима игры</title>
-    <link rel="stylesheet" href="/style.css">
+    <title>Вибір режиму гри</title>
+    <link rel="stylesheet" href="/playgame.css">
 </head>
 <body>
-<h1>Выбор режима</h1>
-<button onclick="location.href='/play/single'">Одиночная игра</button>
-<button onclick="location.href='/play/online-menu'">Онлайн игра</button>
+
+<!-- ХЕДЕР -->
+<header class="site-header">
+    <div class="header-inner">
+        <h1 class="site-title">🃏 Great Battle</h1>
+        <div id="auth-bar" class="auth-bar"></div>
+    </div>
+</header>
+
+<!-- КОНТЕНТ -->
+<main class="main-content">
+    <section class="mode-selection fade-in">
+        <h1>Вибір режиму</h1>
+        <button onclick="location.href='/play/single'">Одиночна гра</button>
+        <button onclick="location.href='/play/online-menu'">Онлайн гра</button>
+        <br>
+        <button class="back-button" onclick="location.href='/'">← Назад</button>
+    </section>
+</main>
+
+<!-- ФУТЕР (по желанию) -->
+<footer class="site-footer">
+    <p>🔗 Звʼязок: <a href="https://t.me/Marshall949">@Marshall949</a>, <a href="https://t.me/danilbaz">@danilbaz</a>, <a href="https://t.me/MxmChb">@MxmChb</a></p>
+</footer>
+
 </body>
 </html>
