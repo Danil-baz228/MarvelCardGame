@@ -6,8 +6,8 @@ const http = require('http');
 const app = express();
 const server = http.createServer(app);
 
-const socket = require('./socket'); // ⬅️ окремий файл для Socket.IO
-const io = socket.init(server);     // ⬅️ ініціалізація
+const socket = require('./socket');
+const io = socket.init(server);
 
 const PORT = 3000;
 
@@ -35,7 +35,6 @@ function ensureAuth(req, res, next) {
 
 app.use(ensureAuth);
 
-// Контроллери
 const mainController = require('./controllers/mainController');
 const profileController = require('./controllers/profileController');
 const playController = require('./controllers/playController');

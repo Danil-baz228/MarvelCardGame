@@ -53,7 +53,6 @@
 
         <div class="player-area your-area">
             <div class="hand your-hand" id="player-hand">
-                <!-- Cards will be added dynamically -->
             </div>
             <div class="player-stats">
                 <div class="player-name">You</div>
@@ -111,15 +110,12 @@
         const gameResultMessage = document.getElementById('game-result-message');
         const newGameButton = document.getElementById('new-game');
 
-        // Initialize game state
         fetchGameState();
 
-        // Add event listeners
         endTurnButton.addEventListener('click', handleEndTurn);
         resetGameButton.addEventListener('click', handleResetGame);
         newGameButton.addEventListener('click', handleResetGame);
 
-        // Fetch current game state from server
         function fetchGameState() {
             fetch('/play/single', {
                 method: 'POST',
@@ -132,7 +128,6 @@
                         gameState = data.gameState;
                         updateGameUI();
 
-                        // If it's opponent's turn, poll for changes
                         if (!gameState.playerTurn && !gameState.gameOver) {
                             setTimeout(fetchGameState, 1500);
                         }
@@ -141,33 +136,25 @@
                 .catch(error => console.error('Error fetching game state:', error));
         }
 
-        // Update UI based on game state
         function updateGameUI() {
-            // Update turn info
             turnNumber.textContent = gameState.turn;
 
-            // Update player stats
             playerHealthValue.textContent = gameState.player.health;
             playerHealthBar.style.width = `${(gameState.player.health / 30) * 100}%`;
             playerDefense.textContent = gameState.player.defense;
             playerCoins.textContent = gameState.player.coins;
 
-            // Update opponent stats
             opponentHealthValue.textContent = gameState.opponent.health;
             opponentHealthBar.style.width = `${(gameState.opponent.health / 30) * 100}%`;
             opponentDefense.textContent = gameState.opponent.defense;
             opponentCardCount.textContent = gameState.opponent.hand;
 
-            // Update player hand
             renderPlayerHand();
 
-            // Update game log
             renderGameLog();
 
-            // Check game state
             endTurnButton.disabled = !gameState.playerTurn || gameState.gameOver;
 
-            // Show game over modal if game is over
             if (gameState.gameOver) {
                 const playerWon = gameState.opponent.health <= 0;
                 gameResult.textContent = playerWon ? "Victory!" : "Defeat!";
@@ -180,7 +167,6 @@
             }
         }
 
-        // Render player's hand
         function renderPlayerHand() {
             playerHand.innerHTML = '';
 
@@ -189,7 +175,6 @@
                 cardElement.className = 'card';
                 cardElement.dataset.index = index;
 
-                // Add affordable class if player has enough coins
                 if (card.cost <= gameState.player.coins) {
                     cardElement.classList.add('affordable');
                 } else {
@@ -210,7 +195,6 @@
                         </div>
                     `;
 
-                // Add click handler only if it's player's turn and the card is affordable
                 if (gameState.playerTurn && card.cost <= gameState.player.coins && !gameState.gameOver) {
                     cardElement.addEventListener('click', () => handlePlayCard(index));
                 }
@@ -219,7 +203,6 @@
             });
         }
 
-        // Render game log
         function renderGameLog() {
             logMessages.innerHTML = '';
 
@@ -230,11 +213,9 @@
                 logMessages.appendChild(logEntry);
             });
 
-            // Auto scroll to bottom
             logMessages.scrollTop = logMessages.scrollHeight;
         }
 
-        // Handle play card action
         function handlePlayCard(cardIndex) {
             if (!gameState.playerTurn || gameState.gameOver) return;
 
@@ -253,7 +234,6 @@
                 .catch(error => console.error('Error playing card:', error));
         }
 
-        // Handle end turn action
         function handleEndTurn() {
             if (!gameState.playerTurn || gameState.gameOver) return;
 
@@ -268,14 +248,12 @@
                         gameState = data.gameState;
                         updateGameUI();
 
-                        // Start polling for opponent's turn
                         setTimeout(fetchGameState, 1500);
                     }
                 })
                 .catch(error => console.error('Error ending turn:', error));
         }
 
-        // Handle reset game action
         function handleResetGame() {
             fetch('/play/single', {
                 method: 'POST',

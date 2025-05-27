@@ -1,4 +1,3 @@
-/* === GLOBAL === */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
@@ -21,7 +20,6 @@ a:hover {
     text-decoration: underline;
 }
 
-/* === HEADER === */
 .site-header {
     background-color: #111827;
     padding: 1rem 2rem;
@@ -62,8 +60,6 @@ a:hover {
     font-weight: 500;
 }
 
-
-/* === BUTTONS === */
 .button,
 button,
 .button-link {
@@ -88,7 +84,6 @@ button:hover,
     box-shadow: 0 0 10px #00bcd4;
 }
 
-/* === FORMS === */
 form {
     background-color: rgba(255, 255, 255, 0.05);
     padding: 30px;
@@ -117,7 +112,6 @@ input[type="email"] {
     color: #333;
 }
 
-/* === MESSAGES === */
 .message-box {
     margin-top: 100px;
     background: rgba(255, 255, 255, 0.1);
@@ -126,7 +120,6 @@ input[type="email"] {
     display: inline-block;
 }
 
-/* === MAIN === */
 .main-content {
     padding: 2rem;
 }
@@ -150,7 +143,6 @@ input[type="email"] {
     color: #d1d5db;
 }
 
-/* === ANIMATIONS === */
 .fade-in {
     animation: fadeInUp 1s ease-out forwards;
     opacity: 0;
@@ -167,7 +159,6 @@ input[type="email"] {
     }
 }
 
-/* === GAME RULES === */
 .rules-section {
     background-color: rgba(255, 255, 255, 0.05);
     margin: 40px auto;
@@ -193,7 +184,6 @@ input[type="email"] {
     border-bottom: 1px dashed rgba(255,255,255,0.1);
 }
 
-/* === CARD PREVIEW === */
 .cards-preview {
     margin: 60px auto;
     text-align: center;
@@ -228,7 +218,6 @@ input[type="email"] {
     border-radius: 10px;
 }
 
-/* === FOOTER === */
 .site-footer {
     background-color: #111827;
     padding: 20px;
@@ -254,11 +243,10 @@ input[type="email"] {
     object-fit: cover;
 }
 
-/* === CARD SLIDER CUSTOM STYLES === */
 .cards-preview {
     margin: 60px auto;
     text-align: center;
-    overflow-x: hidden; /* Убираем горизонтальный скролл */
+    overflow-x: hidden;
 }
 
 .carousel {
@@ -337,7 +325,6 @@ input[type="email"] {
     line-height: 1.4;
 }
 
-/* === INTRO VIDEO === */
 #intro-video-wrapper {
     position: fixed;
     top: 0;
@@ -445,7 +432,6 @@ body::before {
     transition: background 0.3s ease;
 }
 
-/* Медалі місць */
 .top-players-table tbody tr:nth-child(1) td:first-child::before {
     content: "🥇 ";
 }

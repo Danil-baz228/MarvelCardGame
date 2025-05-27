@@ -120,7 +120,6 @@ body {
     text-decoration: underline;
 }
 
-/* Всплывающее уведомление (Toast) */
 .toast {
     position: fixed;
     bottom: -100px;
@@ -152,7 +151,6 @@ body {
     background-color: #00c853;
 }
 
-/* Анимация появления */
 .fade-in {
     animation: fadeInUp 0.8s ease-out forwards;
     opacity: 0;
@@ -169,7 +167,6 @@ body {
     }
 }
 
-/* Мобильная адаптация */
 @media (max-width: 768px) {
     .profile-edit {
         flex-direction: column;

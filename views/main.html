@@ -80,9 +80,8 @@
     const video = document.getElementById('intro-video');
     const skipBtn = document.getElementById('skip-intro');
 
-    // === 1. Обработка интро-видео ===
     const versionKey = "introPlayedVersion";
-    const currentVersion = "20240522_012"; // меняй при перезапуске сервера
+    const currentVersion = "20240522_012";
     const lastSeenVersion = localStorage.getItem(versionKey);
     const shouldPlay = lastSeenVersion !== currentVersion;
 
@@ -97,7 +96,6 @@
         localStorage.setItem(versionKey, currentVersion);
       });
 
-      // Таймер на случай, если видео не завершилось
       setTimeout(() => {
         if (videoWrapper.style.display !== "none") {
           videoWrapper.style.display = "none";
@@ -107,7 +105,6 @@
       }, 30000);
     }
 
-    // === 2. Авторизация и панель действий ===
     if (window.user) {
       const avatarUrl = window.user.avatar_url || '/uploads/avatars/images.jpg';
       const avatar = `<img src="${avatarUrl}" class="avatar">`;
@@ -127,7 +124,6 @@
       actionSection.innerHTML = `<p><strong>Увійдіть</strong>, щоб почати гру!</p>`;
     }
 
-    // === 3. Слайдер карт ===
     let cardsData = [];
 
     const container = document.querySelector('.card-container');
@@ -179,7 +175,6 @@
             });
   });
 
-  // === 4. Рендер топ-гравців ===
   const tbody = document.getElementById('top-players-body');
 
   if (window.topPlayers?.length) {

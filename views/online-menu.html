@@ -7,7 +7,6 @@
 </head>
 <body>
 
-<!-- ХЕДЕР -->
 <header class="site-header">
   <div class="header-inner">
     <h1 class="site-title">🃏 Great Battle</h1>
@@ -15,32 +14,26 @@
   </div>
 </header>
 
-<!-- КОНТЕНТ -->
 <main class="main-content">
   <section class="mode-selection fade-in">
     <h1>Онлайн режим</h1>
 
-    <!-- КНОПКА СОЗДАНИЯ ИГРЫ -->
     <button type="button" onclick="createGame()">Створити нову гру</button>
 
-    <!-- ПРИСОЕДИНИТЬСЯ К ИГРЕ -->
     <form method="POST" action="/play/online/join">
       <input name="gameId" placeholder="Введіть ID гри" required>
       <br>
       <button type="submit">Приєднатися</button>
     </form>
 
-    <!-- КНОПКА НАЗАД -->
     <button class="back-button" onclick="location.href='/play'">← Назад</button>
   </section>
 </main>
 
-<!-- ФУТЕР -->
 <footer class="site-footer">
   <p>🔗 Звʼязок: <a href="https://t.me/Marshall949">@Marshall949</a>, <a href="https://t.me/danilbaz">@danilbaz</a>, <a href="https://t.me/MxmChb">@MxmChb</a></p>
 </footer>
 
-<!-- СКРИПТ СОЗДАНИЯ ИГРЫ -->
 <script>
   function createGame() {
     console.log("Створення гри...");

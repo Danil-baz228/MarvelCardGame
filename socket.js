@@ -34,17 +34,14 @@ module.exports = {
                         return;
                     }
 
-                    // Удаляем карту из руки в базе
                     await db.query(
                         'UPDATE match_cards SET in_hand = false WHERE match_id = ? AND user_id = ? AND card_id = ?',
                         [data.matchId, data.userId, data.card.id]
                     );
 
-                    // Уведомляем клиента удалить карту
                     io.to(`match_${data.matchId}`).emit('card_played', data);
                     io.to(`match_${data.matchId}`).emit('card_removed', { cardId: data.card.id, userId: data.userId });
 
-                    // Проверка победы
                     if (data.hp !== undefined && data.hp <= 0) {
                         await db.query('UPDATE matches SET winner_id = ? WHERE id = ?', [data.userId, data.matchId]);
                         io.to(`match_${data.matchId}`).emit('match_ended', { winnerId: data.userId });
