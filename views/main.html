@@ -49,6 +49,23 @@
     </div>
   </section>
 
+  <section class="top-players-section fade-in">
+    <h3>🏆 Топ гравців</h3>
+    <table class="top-players-table">
+      <thead>
+      <tr>
+        <th>Місце</th>
+        <th>Гравець</th>
+        <th>Перемоги</th>
+        <th>Рейтинг</th>
+      </tr>
+      </thead>
+      <tbody id="top-players-body">
+      <tr><td colspan="4">Завантаження...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
 </main>
 
   <footer class="site-footer">
@@ -161,6 +178,23 @@
               container.innerHTML = '<p>Помилка завантаження карт.</p>';
             });
   });
+
+  // === 4. Рендер топ-гравців ===
+  const tbody = document.getElementById('top-players-body');
+
+  if (window.topPlayers?.length) {
+    tbody.innerHTML = window.topPlayers.map((p, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${p.username}</td>
+      <td>${p.wins}</td>
+      <td>${p.rating}</td>
+    </tr>
+  `).join('');
+  } else {
+    tbody.innerHTML = '<tr><td colspan="4">Немає даних</td></tr>';
+  }
+
 </script>
 
 

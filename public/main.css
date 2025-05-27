@@ -382,4 +382,77 @@ body::before {
     z-index: -1;
 }
 
+.top-players-section {
+    margin: 3rem auto;
+    padding: 2rem;
+    background: radial-gradient(circle at center, #202035, #161622);
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
+    max-width: 900px;
+    color: #ffffff;
+    text-align: center;
+    font-family: 'Segoe UI', sans-serif;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+}
+
+.top-players-section h3 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #ffd700;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.top-players-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: rgba(28, 28, 46, 0.9);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 1rem;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
+}
+
+.top-players-table thead {
+    background-color: rgba(45, 45, 68, 0.95);
+}
+
+.top-players-table th,
+.top-players-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.top-players-table th {
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #dddddd;
+}
+
+.top-players-table td {
+    color: #eaeaea;
+    font-size: 1rem;
+}
+
+.top-players-table tr:hover {
+    background-color: rgba(90, 90, 120, 0.15);
+    transition: background 0.3s ease;
+}
+
+/* Медалі місць */
+.top-players-table tbody tr:nth-child(1) td:first-child::before {
+    content: "🥇 ";
+}
+.top-players-table tbody tr:nth-child(2) td:first-child::before {
+    content: "🥈 ";
+}
+.top-players-table tbody tr:nth-child(3) td:first-child::before {
+    content: "🥉 ";
+}
 
