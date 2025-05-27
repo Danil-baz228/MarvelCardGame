@@ -200,16 +200,16 @@ exports.handleBattle = async (req, res) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Online Card Battle - Match #${matchId}</title>
+            <title>Онлайн Битва Карт — Матч №${matchId}</title>
             <link rel="stylesheet" href="/playOnline.css">
         </head>
         <body>
         <div class="game-container">
             <header class="game-header">
-                <h1>Online Card Battle</h1>
+                <h1>Онлайн Битва Карт</h1>
                 <div class="game-stats">
-                    <div class="match-info">Match #${matchId}</div>
-                    <div class="timer-display">Time: <span id="timer">30</span>s</div>
+                    <div class="match-info">Матч №${matchId}</div>
+                    <div class="timer-display">Час: <span id="timer">30</span>с</div>
                 </div>
             </header>
 
@@ -217,25 +217,24 @@ exports.handleBattle = async (req, res) => {
                 <div class="player-area opponent-area">
                     <div class="player-stats">
                         <div class="player-name" id="opponent-name">
-                            <img id="opponent-avatar" class="avatar" src="/default-avatar.png" alt="Avatar">
-                            <span class="username">Waiting for opponent...</span>
+                            <img id="opponent-avatar" class="avatar" src="/default-avatar.png" alt="Аватар">
+                            <span class="username">Очікується суперник...</span>
                         </div>
-
                         <div class="stats">
                             <div class="health-bar">
-                                <div class="label">Health:</div>
+                                <div class="label">Здоров'я:</div>
                                 <div class="bar">
                                     <div id="opponent-health-bar" class="bar-fill" style="width: 100%;"></div>
                                 </div>
                                 <div id="enemy-hp">30</div>
                             </div>
                             <div class="defense-stat">
-                                <div class="label">Defense:</div>
+                                <div class="label">Захист:</div>
                                 <div id="opponent-defense">0</div>
                             </div>
                         </div>
                         <div class="card-count">
-                            <div class="label">Cards:</div>
+                            <div class="label">Картки:</div>
                             <div id="opponent-card-count">4</div>
                         </div>
                     </div>
@@ -248,42 +247,37 @@ exports.handleBattle = async (req, res) => {
                 </div>
 
                 <div class="game-log">
-                    <h3>Battle Log</h3>
+                    <h3>Журнал Бою</h3>
                     <div id="log" class="log-content"></div>
                 </div>
 
                 <div class="player-area your-area">
-                    <div class="hand your-hand" id="cards">
-                        <!-- Player cards will be loaded here -->
-                    </div>
+                    <div class="hand your-hand" id="cards"></div>
                     <div class="player-stats">
                         <div class="player-name">
-                            <img id="my-avatar" class="avatar" src="${avatar}" alt="Avatar">
+                            <img id="my-avatar" class="avatar" src="${avatar}" alt="Аватар">
                             <span class="username">${username}</span>
                         </div>
-
                         <div class="stats">
                             <div class="health-bar">
-                                <div class="label">Health:</div>
+                                <div class="label">Здоров'я:</div>
                                 <div class="bar">
                                     <div id="player-health-bar" class="bar-fill my-health-bar" style="width: 100%;"></div>
                                 </div>
                                 <div id="my-hp">30</div>
                             </div>
                             <div class="defense-stat">
-                                <div class="label">Defense:</div>
+                                <div class="label">Захист:</div>
                                 <div id="player-defense">0</div>
                             </div>
                             <div class="cost-stat">
-                                <div class="label">Cost:</div>
+                                <div class="label">Вартість:</div>
                                 <div id="cost">10</div>
                             </div>
                         </div>
                         <div class="actions">
-                            <button id="end-turn" class="action-button">End Turn</button>
-                            
+                            <button id="end-turn" class="action-button">Завершити хід</button>
                         </div>
-                        
                         <button id="leave-match" class="leave-button">Вийти з матчу</button>
                     </div>
                 </div>
@@ -291,6 +285,8 @@ exports.handleBattle = async (req, res) => {
 
             <div id="result" class="status-message hidden"></div>
         </div>
+
+        
 
         <script src="/socket.io/socket.io.js"></script>
         <script>
@@ -355,7 +351,7 @@ exports.handleBattle = async (req, res) => {
 
                     opponentNameElement.classList.remove('pulse');
                 }
-                log((opponent ? opponent.username : 'Opponent') + ' joined the match');
+                log((opponent ? opponent.username : 'Opponent') + ' приєднався до матчу');
             });
 
           
@@ -367,7 +363,7 @@ exports.handleBattle = async (req, res) => {
                     opponentNameElement.querySelector('.username').textContent = opponent.username;
     
                     opponentNameElement.classList.remove('pulse');
-                    log('Connected to match with ' + opponent.username);
+                    log('Підключено до матчу з ' + opponent.username);
                 }
             });
 
@@ -381,10 +377,10 @@ exports.handleBattle = async (req, res) => {
                     opponentHealthBar.style.width = (enemyHp / 30) * 100 + "%";
                     oponentDefense = 0;
                     oponentDefenseElement.textContent = oponentDefense;
-                    log(attackerName + ' attacks for ' + card.attack + ' damage 🗡️');
+                    log(attackerName + ' атаки на ' + card.attack + ' дамагу 🗡️');
                     if (enemyHp <= 0) {
                         gameOver = true;
-                        showResult("🎉 Victory! You won the match!", 'victory');
+                        showResult("🎉 Перемога! Ви виграли матч!!", 'victory');
                     }
                 } else if (attackerId !== userId) {
                     
@@ -400,7 +396,7 @@ exports.handleBattle = async (req, res) => {
             
                     if (myHp <= 0) {
                         gameOver = true;
-                        showResult("❌ Defeat! You lost the match!", 'defeat');
+                        showResult("❌ Поразка! Ти програв матч!", 'defeat');
                     }
                 }
             });
@@ -419,7 +415,7 @@ exports.handleBattle = async (req, res) => {
 
             socket.on('turn_ended', async ({ username: playerName, nextTurnId }) => {
                 if (!gameOver) {
-                    log(playerName + ' ended their turn');
+                    log(playerName + ' закінчив свій хід.');
                     if (nextTurnId === userId) {
                         cost = 10;
                         costElement.textContent = cost;
@@ -441,7 +437,7 @@ exports.handleBattle = async (req, res) => {
                     myHpElement.textContent = '0';
                 }
                 showResult(
-                    winnerId === userId ? "🎉 Victory! You won the match!" : "❌ Defeat! You lost the match!",
+                    winnerId === userId ? "🎉 Перемога! Ви виграли матч!" : "❌ Поразка! Ви програли матч!",
                     winnerId === userId ? 'victory' : 'defeat'
                 );
             });
@@ -453,7 +449,7 @@ exports.handleBattle = async (req, res) => {
                 const res = await fetch(\`/api/match/${matchId}/turn\`);
                 const data = await res.json();
                 if (data.currentTurnId !== userId) {
-                    log('❗ Not your turn!');
+                    log('❗ Не ваша черга!');
                     return;
                 }
                 
