@@ -45,6 +45,7 @@ const apiController = require('./controllers/apiController');
 app.get('/api/match/:matchId/hand', apiController.getHand);
 app.post('/api/match/:matchId/draw', apiController.drawCard);
 app.get('/api/card/:cardId', apiController.getCardById);
+app.post('/api/match/leave', apiController.leaveMatch);
 
 app.get('/login', (req, res) => res.redirect('/auth/login'));
 app.get('/register', (req, res) => res.redirect('/auth/register'));

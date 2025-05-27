@@ -45,4 +45,36 @@ exports.drawCard = async (req, res) => {
     res.json({ cardId: card.id });
 };
 
+exports.leaveMatch = async (req, res) => {
+    const userId = req.session.user?.id;
+    const { matchId } = req.body;
+    if (!userId) return res.status(403).json({ error: 'Не авторизовано' });
+
+    try {
+        const [[match]] = await db.query('SELECT player1_id, player2_id FROM matches WHERE id = ?', [matchId]);
+        if (!match) return res.status(404).json({ error: 'Матч не знайдено' });
+
+        const opponentId = userId === match.player1_id ? match.player2_id : match.player1_id;
+
+        if (!opponentId) {
+            // одиночный матч — просто удаляем
+            await db.query('DELETE FROM matches WHERE id = ?', [matchId]);
+        } else {
+            await db.query(
+                'UPDATE matches SET winner_id = ? WHERE id = ?',
+                [opponentId, matchId]
+            );
+
+            // Уведомим всех в комнате
+            const io = require('../socket').getIO();
+            io.to(`match_${matchId}`).emit('match_ended', { winnerId: opponentId });
+        }
+
+        return res.json({ success: true });
+    } catch (err) {
+        console.error('❌ Помилка при виході з матчу:', err);
+        return res.status(500).json({ error: 'Помилка сервера' });
+    }
+};
+
 

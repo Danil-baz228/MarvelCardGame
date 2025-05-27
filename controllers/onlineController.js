@@ -281,7 +281,10 @@ exports.handleBattle = async (req, res) => {
                         </div>
                         <div class="actions">
                             <button id="end-turn" class="action-button">End Turn</button>
+                            
                         </div>
+                        
+                        <button id="leave-match" class="leave-button">Вийти з матчу</button>
                     </div>
                 </div>
             </div>
@@ -322,7 +325,26 @@ exports.handleBattle = async (req, res) => {
             const opponentHealthBar = document.getElementById('opponent-health-bar');
             const playerDefenseElement = document.getElementById('player-defense');
             const oponentDefenseElement = document.getElementById('opponent-defense');
+            
+            document.getElementById('leave-match').addEventListener('click', async () => {
+                const confirmed = confirm('Ви впевнені, що хочете вийти з матчу?');
+                if (!confirmed) return;
+            
+                try {
+                    await fetch('/api/match/leave', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ matchId })
+                    });
+            
+                    socket.disconnect(); // отключаем сокет
+                    window.location.href = '/play/online-menu'; // редирект в меню
+                } catch (err) {
+                    console.error('Помилка при виході з матчу:', err);
+                }
+            });
 
+            
             // Socket event listeners
             socket.on('player_joined', ({ player1, player2 }) => {
                 // Find the opponent (the one whose id is not mine)
