@@ -2,6 +2,9 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const config = require('../config.json');
 const { findUserByEmail } = require('../models/user');
+const db = require('../db');
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 exports.handle = async (req, res) => {
   if (req.method === 'GET') {
@@ -15,6 +18,11 @@ exports.handle = async (req, res) => {
     return res.send('No user found with that email.');
   }
 
+  const tempPassword = crypto.randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+
+  const hashedPassword = await bcrypt.hash(tempPassword, 10);
+  await db.query('UPDATE users SET password_hash = ? WHERE id = ?', [hashedPassword, user.id]);
+
   const transporter = nodemailer.createTransport(config.smtp);
 
   try {
@@ -22,7 +30,7 @@ exports.handle = async (req, res) => {
       from: config.smtp.auth.user,
       to: email,
       subject: 'S.W.O.R.D. Password Reminder',
-      text: `Hello ${user.username},\n\nSorry, but we can't send the password directly for security reasons.\n\nPlease use the reset function (soon).\n\nSincerely,\nS.W.O.R.D.`
+      text: `Hello ${user.username},\n\nYour temporary password is: ${tempPassword}\n\nPlease log in and change your password immediately.\n\nSincerely,\nS.W.O.R.D.`
     });
 
     res.send(`
