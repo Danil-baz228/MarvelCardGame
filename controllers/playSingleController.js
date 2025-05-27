@@ -1,31 +1,25 @@
 const path = require('path');
+const db = require('../db');
 
-const cardDeck = [
-    { id: 1, name: "Warrior", attack: 3, defense: 1, cost: 2, image: "/cardsimg/iron_man.png" },
-    { id: 2, name: "Shield Bearer", attack: 1, defense: 4, cost: 2, image: "/cardsimg/iron_man.png" },
-    { id: 3, name: "Knight", attack: 4, defense: 2, cost: 3, image: "/cardsimg/iron_man.png" },
-    { id: 4, name: "Archer", attack: 5, defense: 0, cost: 3, image: "/cardsimg/iron_man.png" },
-    { id: 5, name: "Paladin", attack: 3, defense: 3, cost: 4, image: "../public/cardsimg/iron_man.png" },
-    { id: 6, name: "Assassin", attack: 6, defense: 0, cost: 4, image: "../public/cardsimg/iron_man.png" },
-    { id: 7, name: "Guardian", attack: 2, defense: 5, cost: 4, image: "../public/cardsimg/iron_man.png" },
-    { id: 8, name: "Berserker", attack: 7, defense: 1, cost: 5, image: "../public/cardsimg/iron_man.png" },
-    { id: 9, name: "Champion", attack: 5, defense: 5, cost: 6, image: "../public/cardsimg/iron_man.png" },
-    { id: 10, name: "Dragon", attack: 8, defense: 3, cost: 8, image: "../public/cardsimg/iron_man.png" }
-];
+async function fetchAllCards() {
+    const [rows] = await db.query('SELECT * FROM cards');
+    return rows;
+}
 
 // Game state for different player sessions
 const gameStates = {};
 
 // Initialize a new game or get existing one
-function getOrCreateGame(userId) {
+async function getOrCreateGame(userId) {
     if (!gameStates[userId]) {
         // Set up initial game state
+        const cardDeck = await fetchAllCards();
         gameStates[userId] = {
             player: {
                 health: 30,
                 defense: 0,
-                coins: 3,
-                hand: getRandomCards(4),
+                coins: 5,
+                hand: getRandomCards(cardDeck, 4),
                 deck: [...cardDeck]
             },
             opponent: {
@@ -44,17 +38,17 @@ function getOrCreateGame(userId) {
 }
 
 // Get random cards for player's hand
-function getRandomCards(count) {
+function getRandomCards(deck, count) {
     const cards = [];
     for (let i = 0; i < count; i++) {
-        const randomIndex = Math.floor(Math.random() * cardDeck.length);
-        cards.push({...cardDeck[randomIndex]});
+        const randomIndex = Math.floor(Math.random() * deck.length);
+        cards.push({ ...deck[randomIndex] });
     }
     return cards;
 }
 
 // Simulate AI opponent's turn
-function opponentTurn(gameState) {
+async function opponentTurn(gameState) {
     const action = Math.random() > 0.3 ? 'attack' : 'defense';
     const strength = Math.floor(Math.random() * 5) + 1;
 
@@ -82,8 +76,9 @@ function opponentTurn(gameState) {
     gameState.player.coins += Math.min(10, gameState.turn); // Coins equal to turn number, max 10
 
     // Draw a card
-    if (gameState.player.hand.length < 10) {
-        gameState.player.hand.push(getRandomCards(1)[0]);
+    if (gameState.player.hand.length < 5) {
+        cardDeck = await fetchAllCards();
+        gameState.player.hand.push(getRandomCards(cardDeck, 1)[0]);
     }
 
     gameState.gameLog.push(`Turn ${gameState.turn}: Your turn. You have ${gameState.player.coins} coins.`);
@@ -93,6 +88,8 @@ function opponentTurn(gameState) {
 // Play a card
 function playCard(gameState, cardIndex) {
     const card = gameState.player.hand[cardIndex];
+
+    if (!gameState.playerTurn) return
 
     if (card.cost > gameState.player.coins) {
         gameState.gameLog.push(`Not enough coins to play ${card.name}!`);
@@ -147,7 +144,7 @@ function resetGame(userId) {
     return getOrCreateGame(userId);
 }
 
-exports.handle = (req, res) => {
+exports.handle = async (req, res) => {
     if (!req.session.user) {
         return res.redirect('/login');
     }
@@ -160,7 +157,7 @@ exports.handle = (req, res) => {
     } else if (req.method === 'POST') {
         // Handle game actions via API calls
         const action = req.body.action;
-        let gameState = getOrCreateGame(userId);
+        let gameState = await getOrCreateGame(userId);
 
         switch (action) {
             case 'getState':
