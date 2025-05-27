@@ -32,10 +32,10 @@ exports.getCardById = async (req, res) => {
 exports.drawCard = async (req, res) => {
     const { matchId, userId } = req.body;
 
-    // Найти случайную карту
+
     const [[card]] = await db.query('SELECT * FROM cards ORDER BY RAND() LIMIT 1');
 
-    // Добавить её в match_cards
+
     await db.query(`
         INSERT INTO match_cards (match_id, user_id, card_id, in_hand)
         VALUES (?, ?, ?, true)
@@ -57,7 +57,7 @@ exports.leaveMatch = async (req, res) => {
         const opponentId = userId === match.player1_id ? match.player2_id : match.player1_id;
 
         if (!opponentId) {
-            // одиночный матч — просто удаляем
+
             await db.query('DELETE FROM matches WHERE id = ?', [matchId]);
         } else {
             await db.query(
@@ -65,7 +65,7 @@ exports.leaveMatch = async (req, res) => {
                 [opponentId, matchId]
             );
 
-            // Уведомим всех в комнате
+
             const io = require('../socket').getIO();
             io.to(`match_${matchId}`).emit('match_ended', { winnerId: opponentId });
         }

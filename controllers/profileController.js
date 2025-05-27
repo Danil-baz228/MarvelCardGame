@@ -4,7 +4,7 @@ const multer = require('multer');
 const bcrypt = require('bcrypt');
 const db = require('../db');
 
-// Настройка multer
+
 const storage = multer.diskStorage({
     destination: './public/uploads/avatars',
     filename: (req, file, cb) => {
@@ -62,7 +62,7 @@ exports.handle = [
                 : current_avatar_url;
 
             try {
-                // Смена пароля, если поля присутствуют
+
                 if (password_current && password_new) {
                     const [[user]] = await db.query('SELECT password_hash FROM users WHERE id = ?', [userId]);
                     const isMatch = await bcrypt.compare(password_current, user.password_hash);
@@ -73,7 +73,7 @@ exports.handle = [
                     await db.query('UPDATE users SET password_hash = ? WHERE id = ?', [hashed, userId]);
                 }
 
-                // Проверка на дубликат username только если он изменился
+
                 const [[currentUser]] = await db.query('SELECT username FROM users WHERE id = ?', [userId]);
                 if (username !== currentUser.username) {
                     const [existing] = await db.query(

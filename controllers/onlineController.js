@@ -2,7 +2,7 @@ const db = require('../db');
 const path = require('path');
 const io = require('../socket').getIO();
 
-// === Универсальный шаблон страницы помилки ===
+
 function renderErrorPage(title, message, backLink = '/play') {
     return `
     <!DOCTYPE html>
@@ -14,7 +14,7 @@ function renderErrorPage(title, message, backLink = '/play') {
     </head>
     <body>
 
-      <!-- ХЕДЕР -->
+   
       <header class="site-header">
         <div class="header-inner">
           <h1 class="site-title">🃏 Great Battle</h1>
@@ -22,7 +22,7 @@ function renderErrorPage(title, message, backLink = '/play') {
         </div>
       </header>
 
-      <!-- КОНТЕНТ -->
+    
       <main class="main-content fade-in">
         <section class="mode-selection">
           <h1>${title}</h1>
@@ -31,7 +31,7 @@ function renderErrorPage(title, message, backLink = '/play') {
         </section>
       </main>
 
-      <!-- ФУТЕР -->
+    
       <footer class="site-footer">
         <p>🔗 Звʼязок: 
           <a href="https://t.me/Marshall949">@Marshall949</a>, 
@@ -46,7 +46,7 @@ function renderErrorPage(title, message, backLink = '/play') {
   `;
 }
 
-// === Створити гру ===
+
 exports.createGame = async (req, res) => {
     const userId = req.session.user?.id;
     if (!userId) return res.status(403).send(renderErrorPage("🔒 Немає сесії", "Будь ласка, увійдіть у свій акаунт", "/auth/login"));
@@ -65,7 +65,7 @@ exports.createGame = async (req, res) => {
     }
 };
 
-// === Приєднатися до гри ===
+
 exports.joinGame = async (req, res) => {
     const matchId = req.body.gameId;
     const userId = req.session.user?.id;
@@ -93,14 +93,14 @@ exports.joinGame = async (req, res) => {
             [userId, firstTurnId, matchId]
         );
 
-        // Отримуємо username обох гравців
+
         const [[player2]] = await db.query('SELECT username FROM users WHERE id = ?', [userId]);
         const [[player1]] = await db.query('SELECT username FROM users WHERE id = ?', [match.player1_id]);
 
         const player2Username = player2?.username || `Гравець ${userId}`;
         const player1Username = player1?.username || `Гравець ${match.player1_id}`;
 
-        // Відправляємо дані про приєднання обом гравцям
+
         io.to(`match_${matchId}`).emit('player_joined', {
             player1: {
                 id: match.player1_id,
@@ -139,7 +139,7 @@ const giveStartingCards = (userId, matchId) => {
         });
 };
 
-// === Відображення гри ===
+
 exports.handleGame = async (req, res) => {
     const userId = req.session.user?.id;
     const matchId = req.params.gameId;
@@ -165,7 +165,7 @@ exports.handleGame = async (req, res) => {
     }
 };
 
-// === Перевірка статусу підключення ===
+
 exports.checkStatus = async (req, res) => {
     const matchId = req.params.matchId;
 
@@ -311,7 +311,7 @@ exports.handleBattle = async (req, res) => {
             const socket = io();
             socket.emit('join_match', { matchId, userId, username });
 
-            // DOM elements
+            
             const myHpElement = document.getElementById('my-hp');
             const enemyHpElement = document.getElementById('enemy-hp');
             const costElement = document.getElementById('cost');
@@ -337,17 +337,17 @@ exports.handleBattle = async (req, res) => {
                         body: JSON.stringify({ matchId })
                     });
             
-                    socket.disconnect(); // отключаем сокет
-                    window.location.href = '/play/online-menu'; // редирект в меню
+                    socket.disconnect(); 
+                    window.location.href = '/play/online-menu'; 
                 } catch (err) {
                     console.error('Помилка при виході з матчу:', err);
                 }
             });
 
             
-            // Socket event listeners
+           
             socket.on('player_joined', ({ player1, player2 }) => {
-                // Find the opponent (the one whose id is not mine)
+
                 const opponent = player1.id === userId ? player2 : player1;
                 if (opponent && opponent.username !== username) {
                     document.getElementById('opponent-avatar').src = opponent.avatar || '/uploads/avatars/images.jpg';
@@ -358,9 +358,9 @@ exports.handleBattle = async (req, res) => {
                 log((opponent ? opponent.username : 'Opponent') + ' joined the match');
             });
 
-            // Add new event listener for match state
+          
             socket.on('match_state', ({ player1, player2 }) => {
-                // Find the opponent (the one whose id is not mine)
+               
                 const opponent = player1.id === userId ? player2 : player1;
                 if (opponent && opponent.username) {
                     document.getElementById('opponent-avatar').src = opponent.avatar || '/uploads/avatars/images.jpg';
@@ -387,7 +387,7 @@ exports.handleBattle = async (req, res) => {
                         showResult("🎉 Victory! You won the match!", 'victory');
                     }
                 } else if (attackerId !== userId) {
-                    // Apply defense
+                    
                     let damage = Math.max(0, card.attack - myDefense);
                     myHp -= damage;
                     myHp = Math.max(myHp, 0);
@@ -446,7 +446,7 @@ exports.handleBattle = async (req, res) => {
                 );
             });
 
-            // Game functions
+         
             async function playCard(card) {
                 if (gameOver || card.cost > cost) return;
                 
@@ -460,7 +460,7 @@ exports.handleBattle = async (req, res) => {
                 cost -= card.cost;
                 costElement.textContent = cost
                 
-                // If the card has defense, apply it
+                
                 if (card.defense > 0) {
                     myDefense += card.defense;
                     playerDefenseElement.textContent = myDefense;
@@ -502,7 +502,7 @@ exports.handleBattle = async (req, res) => {
                 logElement.appendChild(div);
                 logElement.scrollTop = logElement.scrollHeight;
 
-                // Keep only last 8 messages
+              
                 while (logElement.children.length > 8) {
                     logElement.removeChild(logElement.firstChild);
                 }
@@ -514,7 +514,7 @@ exports.handleBattle = async (req, res) => {
                 resultElement.classList.remove('hidden');
                 clearInterval(interval);
 
-                // Disable all card interactions
+              
                 const cards = document.querySelectorAll('.card:not(.card-back)');
                 cards.forEach(card => {
                     card.style.pointerEvents = 'none';
@@ -593,7 +593,7 @@ exports.handleBattle = async (req, res) => {
                 }, 1000);
             }
 
-            // Initialize game
+           
             async function initializeGame() {
                 try {
                     const res = await fetch('/api/match/' + matchId + '/hand');
@@ -633,30 +633,27 @@ exports.handleBattle = async (req, res) => {
                 }
             }
 
-            // Add waiting animation to opponent name
+           
             opponentNameElement.classList.add('pulse');
 
-            // Initialize the game
+          
             initializeGame();
         </script>
         </body>
         </html>
     `);
 
-    // After res.send(...) in handleBattle, send match state to the connecting player
+
     try {
         const [matchRows] = await db.query('SELECT player1_id, player2_id FROM matches WHERE id = ?', [matchId]);
         if (matchRows.length) {
             const { player1_id, player2_id } = matchRows[0];
             if (player1_id && player2_id) {
-                // Get usernames for both players
+
                 const [[player1]] = await db.query('SELECT username, avatar_url FROM users WHERE id = ?', [player1_id]);
                 const [[player2]] = await db.query('SELECT username, avatar_url FROM users WHERE id = ?', [player2_id]);
 
 
-                // Send current match state to the user who just connected
-                // We need to emit to this specific user's socket, but since we don't have socket here,
-                // we'll emit to the match room and let the client handle it
                 setTimeout(() => {
                     io.to(`match_${matchId}`).emit('match_state', {
                         player1: {
@@ -670,7 +667,7 @@ exports.handleBattle = async (req, res) => {
                             avatar: player2?.avatar_url || '/uploads/avatars/images.jpg'
                         }
                     });
-                }, 1000); // Small delay to ensure client has connected to socket
+                }, 1000);
             }
         }
     } catch (error) {

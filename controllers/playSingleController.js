@@ -6,10 +6,10 @@ async function fetchAllCards() {
     return rows;
 }
 
-// Game state for different player sessions
+
 const gameStates = {};
 
-// Initialize a new game or get existing one
+
 async function getOrCreateGame(userId) {
     if (!gameStates[userId]) {
         // Set up initial game state
@@ -25,7 +25,7 @@ async function getOrCreateGame(userId) {
             opponent: {
                 health: 30,
                 defense: 0,
-                hand: 4, // Just track number of cards for opponent
+                hand: 4,
                 deck: cardDeck.length
             },
             turn: 1,
@@ -37,7 +37,7 @@ async function getOrCreateGame(userId) {
     return gameStates[userId];
 }
 
-// Get random cards for player's hand
+
 function getRandomCards(deck, count) {
     const cards = [];
     for (let i = 0; i < count; i++) {
@@ -47,13 +47,13 @@ function getRandomCards(deck, count) {
     return cards;
 }
 
-// Simulate AI opponent's turn
+
 async function opponentTurn(gameState) {
     const action = Math.random() > 0.3 ? 'attack' : 'defense';
     const strength = Math.floor(Math.random() * 5) + 1;
 
     if (action === 'attack') {
-        // Apply player's defense first
+
         const actualDamage = Math.max(0, strength - gameState.player.defense);
         gameState.player.health -= actualDamage;
         gameState.player.defense = Math.max(0, gameState.player.defense - strength);
@@ -64,18 +64,18 @@ async function opponentTurn(gameState) {
         gameState.gameLog.push(`Opponent gains ${strength} defense!`);
     }
 
-    // Check if game is over
+
     if (gameState.player.health <= 0) {
         gameState.gameOver = true;
         gameState.gameLog.push("Game over! You lost.");
     }
 
-    // Start player's turn
+
     gameState.playerTurn = true;
     gameState.turn++;
-    gameState.player.coins += Math.min(10, gameState.turn); // Coins equal to turn number, max 10
+    gameState.player.coins += Math.min(10, gameState.turn);
 
-    // Draw a card
+
     if (gameState.player.hand.length < 5) {
         cardDeck = await fetchAllCards();
         gameState.player.hand.push(getRandomCards(cardDeck, 1)[0]);
@@ -85,7 +85,7 @@ async function opponentTurn(gameState) {
     return gameState;
 }
 
-// Play a card
+
 function playCard(gameState, cardIndex) {
     const card = gameState.player.hand[cardIndex];
 
@@ -96,13 +96,13 @@ function playCard(gameState, cardIndex) {
         return gameState;
     }
 
-    // Remove card from hand and spend coins
+
     gameState.player.hand.splice(cardIndex, 1);
     gameState.player.coins -= card.cost;
 
-    // Apply card effects
+
     if (card.attack > 0) {
-        // Apply opponent's defense first
+
         const actualDamage = Math.max(0, card.attack - gameState.opponent.defense);
         gameState.opponent.health -= actualDamage;
         gameState.opponent.defense = Math.max(0, gameState.opponent.defense - card.attack);
@@ -115,7 +115,7 @@ function playCard(gameState, cardIndex) {
         gameState.gameLog.push(`You gained ${card.defense} defense from ${card.name}!`);
     }
 
-    // Check if game is over
+
     if (gameState.opponent.health <= 0) {
         gameState.gameOver = true;
         gameState.gameLog.push("Game over! You won!");
@@ -125,12 +125,12 @@ function playCard(gameState, cardIndex) {
     return gameState;
 }
 
-// End player's turn
+
 function endTurn(gameState) {
     gameState.playerTurn = false;
     gameState.gameLog.push("You ended your turn. Opponent is thinking...");
 
-    // Simulate delay for opponent's turn
+
     setTimeout(() => {
         opponentTurn(gameState);
     }, 1000);
@@ -138,7 +138,7 @@ function endTurn(gameState) {
     return gameState;
 }
 
-// Reset game
+
 function resetGame(userId) {
     delete gameStates[userId];
     return getOrCreateGame(userId);
@@ -152,7 +152,7 @@ exports.handle = async (req, res) => {
     const userId = req.session.user.id;
 
     if (req.method === 'GET') {
-        // Render the game page
+
         return res.sendFile(path.resolve('views', 'play-single.html'));
     } else if (req.method === 'POST') {
         // Handle game actions via API calls

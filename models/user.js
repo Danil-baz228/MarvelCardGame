@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 async function registerUser({ username, password, email }) {
   try {
-    const hashedPassword = await bcrypt.hash(password, 10); // безопасное хеширование
+    const hashedPassword = await bcrypt.hash(password, 10);
     await db.query(
         'INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)',
         [username, hashedPassword, email]

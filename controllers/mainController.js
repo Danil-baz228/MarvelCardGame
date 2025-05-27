@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const db = require('../db'); // ← це твій pool з mysql2/promise
+const db = require('../db');
 
 exports.handle = async (req, res) => {
   const filePath = path.resolve('views', 'main.html');
