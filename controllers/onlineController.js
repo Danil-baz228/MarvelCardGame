@@ -189,7 +189,9 @@ exports.handleBattle = async (req, res) => {
     const userId = req.session.user.id;
     const matchId = req.params.matchId;
 
-    const [[user]] = await db.query('SELECT username FROM users WHERE id = ?', [userId]);
+    const [[user]] = await db.query('SELECT username, avatar_url FROM users WHERE id = ?', [userId]);
+    const avatar = user?.avatar_url || '/uploads/avatars/images.jpg';
+
     const username = user?.username || `Гравець ${userId}`;
 
     res.send(`
@@ -214,7 +216,11 @@ exports.handleBattle = async (req, res) => {
             <div class="battlefield">
                 <div class="player-area opponent-area">
                     <div class="player-stats">
-                        <div class="player-name" id="opponent-name">Waiting for opponent...</div>
+                        <div class="player-name" id="opponent-name">
+                            <img id="opponent-avatar" class="avatar" src="/default-avatar.png" alt="Avatar">
+                            <span class="username">Waiting for opponent...</span>
+                        </div>
+
                         <div class="stats">
                             <div class="health-bar">
                                 <div class="label">Health:</div>
@@ -251,7 +257,11 @@ exports.handleBattle = async (req, res) => {
                         <!-- Player cards will be loaded here -->
                     </div>
                     <div class="player-stats">
-                        <div class="player-name">${username}</div>
+                        <div class="player-name">
+                            <img id="my-avatar" class="avatar" src="${avatar}" alt="Avatar">
+                            <span class="username">${username}</span>
+                        </div>
+
                         <div class="stats">
                             <div class="health-bar">
                                 <div class="label">Health:</div>
@@ -318,7 +328,9 @@ exports.handleBattle = async (req, res) => {
                 // Find the opponent (the one whose id is not mine)
                 const opponent = player1.id === userId ? player2 : player1;
                 if (opponent && opponent.username !== username) {
-                    opponentNameElement.textContent = opponent.username;
+                    document.getElementById('opponent-avatar').src = opponent.avatar || '/uploads/avatars/images.jpg';
+                    opponentNameElement.querySelector('.username').textContent = opponent.username;
+
                     opponentNameElement.classList.remove('pulse');
                 }
                 log((opponent ? opponent.username : 'Opponent') + ' joined the match');
@@ -329,7 +341,9 @@ exports.handleBattle = async (req, res) => {
                 // Find the opponent (the one whose id is not mine)
                 const opponent = player1.id === userId ? player2 : player1;
                 if (opponent && opponent.username) {
-                    opponentNameElement.textContent = opponent.username;
+                    document.getElementById('opponent-avatar').src = opponent.avatar || '/uploads/avatars/images.jpg';
+                    opponentNameElement.querySelector('.username').textContent = opponent.username;
+    
                     opponentNameElement.classList.remove('pulse');
                     log('Connected to match with ' + opponent.username);
                 }
@@ -614,8 +628,9 @@ exports.handleBattle = async (req, res) => {
             const { player1_id, player2_id } = matchRows[0];
             if (player1_id && player2_id) {
                 // Get usernames for both players
-                const [[player1]] = await db.query('SELECT username FROM users WHERE id = ?', [player1_id]);
-                const [[player2]] = await db.query('SELECT username FROM users WHERE id = ?', [player2_id]);
+                const [[player1]] = await db.query('SELECT username, avatar_url FROM users WHERE id = ?', [player1_id]);
+                const [[player2]] = await db.query('SELECT username, avatar_url FROM users WHERE id = ?', [player2_id]);
+
 
                 // Send current match state to the user who just connected
                 // We need to emit to this specific user's socket, but since we don't have socket here,
@@ -624,11 +639,13 @@ exports.handleBattle = async (req, res) => {
                     io.to(`match_${matchId}`).emit('match_state', {
                         player1: {
                             id: player1_id,
-                            username: player1?.username || `Player ${player1_id}`
+                            username: player1?.username || `Player ${player1_id}`,
+                            avatar: player1?.avatar_url || '/uploads/avatars/images.jpg'
                         },
                         player2: {
                             id: player2_id,
-                            username: player2?.username || `Player ${player2_id}`
+                            username: player2?.username || `Player ${player2_id}`,
+                            avatar: player2?.avatar_url || '/uploads/avatars/images.jpg'
                         }
                     });
                 }, 1000); // Small delay to ensure client has connected to socket

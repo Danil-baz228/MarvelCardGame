@@ -492,6 +492,18 @@ body {
     animation: pulse 2s infinite;
 }
 
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+.username {
+    vertical-align: middle;
+}
+
+
 @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.5; }
